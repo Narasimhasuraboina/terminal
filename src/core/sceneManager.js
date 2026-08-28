@@ -37,24 +37,24 @@ export class SceneManager {
   }
 
   initLights() {
-    // Ambient light
-    const ambientLight = new THREE.AmbientLight(0x18223c, 1.8);
+    // Realistic Studio Ambient Light
+    const ambientLight = new THREE.AmbientLight(0x223048, 1.4);
     this.scene.add(ambientLight);
 
-    // Cyan Directional Light
-    const dirLight1 = new THREE.DirectionalLight(0x00f3ff, 2.0);
-    dirLight1.position.set(30, 60, 40);
-    this.scene.add(dirLight1);
+    // Main Studio Key Light (White, realistic highlights)
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    keyLight.position.set(35, 65, 45);
+    this.scene.add(keyLight);
 
-    // Magenta Rim Light
-    const dirLight2 = new THREE.DirectionalLight(0xff0077, 1.6);
-    dirLight2.position.set(-30, 40, -40);
-    this.scene.add(dirLight2);
+    // Soft Studio Fill Light (Cool slate)
+    const fillLight = new THREE.DirectionalLight(0x94a3b8, 1.3);
+    fillLight.position.set(-35, 45, -35);
+    this.scene.add(fillLight);
 
-    // Green Accent Light
-    const dirLight3 = new THREE.DirectionalLight(0x00ff88, 1.2);
-    dirLight3.position.set(0, -30, 20);
-    this.scene.add(dirLight3);
+    // Subtle Hardware Edge Rim Light
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.9);
+    rimLight.position.set(0, -20, 30);
+    this.scene.add(rimLight);
   }
 
   initEnvironment() {

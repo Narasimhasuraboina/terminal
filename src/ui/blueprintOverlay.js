@@ -127,6 +127,12 @@ export class BlueprintOverlay {
               <p class="bp-live-desc" id="bp-live-desc">
                 When you run a command, this blueprint will light up the exact physical component performing the work in real-time.
               </p>
+              
+              <div class="bp-live-why" id="bp-live-why-wrap">
+                <span class="bp-why-label">❓ WHY AT THIS HARDWARE POINT:</span>
+                <p class="bp-why-text" id="bp-live-why">Hardware isolation keeps your system stable.</p>
+              </div>
+
               <div class="bp-live-analogy" id="bp-live-analogy">
                 💡 Real World Analogy: Think of your computer as a restaurant—you order at the counter (Terminal), the cashier finds the recipe (Shell), kitchen manager assigns a cook (Syscall/Fork), cook works on the counter (CPU/RAM), and ingredients are in the pantry (SSD).
               </div>
@@ -208,11 +214,13 @@ export class BlueprintOverlay {
     const stepEl = this.container.querySelector('#bp-live-step');
     const titleEl = this.container.querySelector('#bp-live-title');
     const descEl = this.container.querySelector('#bp-live-desc');
+    const whyEl = this.container.querySelector('#bp-live-why');
     const analogyEl = this.container.querySelector('#bp-live-analogy');
 
     if (stepEl) stepEl.textContent = `STEP ${stageIndex + 1} OF ${totalStages} — ${stage.layer.toUpperCase()}`;
     if (titleEl) titleEl.textContent = stage.simpleTitle || stage.name;
     if (descEl) descEl.textContent = stage.simpleExplanation || stage.explanation;
+    if (whyEl) whyEl.textContent = stage.whyHappeningHere || 'Executes at this specific hardware subsystem to maintain CPU privilege isolation and system stability.';
     if (analogyEl) analogyEl.textContent = stage.analogy || '💡 Processing hardware and kernel request.';
   }
 }

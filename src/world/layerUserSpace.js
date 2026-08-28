@@ -34,51 +34,65 @@ export class LayerUserSpace {
   }
 
   buildHardwareModels() {
-    // 1. Workstation Desk
+    // ==========================================
+    // 1. REALISTIC WORKSTATION DESK
+    // ==========================================
     const deskTop = new THREE.Mesh(
-      new THREE.BoxGeometry(15, 0.4, 9),
-      new THREE.MeshStandardMaterial({ color: 0x0d1527, metalness: 0.7, roughness: 0.3 })
+      new THREE.BoxGeometry(16, 0.45, 9.6),
+      new THREE.MeshStandardMaterial({ color: 0x0a101d, metalness: 0.8, roughness: 0.35 })
     );
     deskTop.position.set(0, 1.0, 0);
     this.group.add(deskTop);
 
-    // Metallic Desk Legs
-    const legMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.2 });
-    const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 2.0, 16), legMat);
-    leg1.position.set(-6.5, 0, -3.5);
+    // Heavy Industrial Steel Desk Legs
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.95, roughness: 0.15 });
+    const leg1 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2.0, 8.4), legMat);
+    leg1.position.set(-7.2, 0, 0);
     this.group.add(leg1);
-    const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 2.0, 16), legMat);
-    leg2.position.set(6.5, 0, -3.5);
+    const leg2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 2.0, 8.4), legMat);
+    leg2.position.set(7.2, 0, 0);
     this.group.add(leg2);
 
-    // 2. Realistic Desktop Monitor
+    // ==========================================
+    // 2. ULTRA-WIDE CURVED 34" WORKSTATION MONITOR
+    // ==========================================
     const monitorGroup = new THREE.Group();
     monitorGroup.position.set(-2.5, 1.2, 0);
 
-    // Base & Neck
+    // Aluminum Desk Clamp & Monitor Arm Base
     const standBase = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.4, 1.6, 0.15, 24),
+      new THREE.CylinderGeometry(1.2, 1.4, 0.18, 24),
       new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.95, roughness: 0.2 })
     );
-    standBase.position.y = 0.08;
+    standBase.position.y = 0.09;
     monitorGroup.add(standBase);
 
+    // Articulated Monitor Arm Pillar
     const standPole = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.15, 0.18, 2.0, 16),
-      new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9 })
+      new THREE.CylinderGeometry(0.18, 0.22, 2.4, 16),
+      new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.92, roughness: 0.2 })
     );
-    standPole.position.set(0, 1.05, -0.2);
+    standPole.position.set(0, 1.25, -0.4);
     monitorGroup.add(standPole);
 
-    // Slim Dark Bezel
+    // Monitor Bezel Chassis (Curved Matte Black Magnesium Alloy)
     const bezelMat = new THREE.MeshStandardMaterial({
-      color: 0x090d16,
-      metalness: 0.85,
-      roughness: 0.3
+      color: 0x050912,
+      metalness: 0.9,
+      roughness: 0.25
     });
-    const bezel = new THREE.Mesh(new THREE.BoxGeometry(5.8, 3.8, 0.25), bezelMat);
-    bezel.position.set(0, 2.9, 0);
+    const bezel = new THREE.Mesh(new THREE.BoxGeometry(7.2, 4.0, 0.28), bezelMat);
+    bezel.position.set(0, 3.2, 0);
     monitorGroup.add(bezel);
+
+    // Power Indicator LED
+    const pwrLed = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 0.05, 12),
+      new THREE.MeshBasicMaterial({ color: 0x00f3ff })
+    );
+    pwrLed.rotation.x = Math.PI / 2;
+    pwrLed.position.set(3.2, 1.35, 0.15);
+    monitorGroup.add(pwrLed);
 
     // Dynamic Live Monospace Screen Face
     this.screenCanvas = document.createElement('canvas');
@@ -88,14 +102,14 @@ export class LayerUserSpace {
     this.screenTexture = new THREE.CanvasTexture(this.screenCanvas);
 
     const screenMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(5.4, 3.4),
+      new THREE.PlaneGeometry(6.8, 3.6),
       new THREE.MeshBasicMaterial({ map: this.screenTexture })
     );
-    screenMesh.position.set(0, 2.9, 0.13);
+    screenMesh.position.set(0, 3.2, 0.15);
     monitorGroup.add(screenMesh);
 
     // Under-glow ring spotlight for active highlighting
-    const haloGeo = new THREE.RingGeometry(2.0, 2.4, 32);
+    const haloGeo = new THREE.RingGeometry(2.4, 3.0, 32);
     const haloMat = new THREE.MeshBasicMaterial({
       color: 0x00f3ff,
       transparent: true,
@@ -110,52 +124,94 @@ export class LayerUserSpace {
     this.group.add(monitorGroup);
     this.nodes['terminal'] = monitorGroup;
 
-    // 3. Mechanical Keyboard
-    const kbBase = new THREE.Mesh(
-      new THREE.BoxGeometry(4.6, 0.18, 1.8),
-      new THREE.MeshStandardMaterial({ color: 0x111827, metalness: 0.6, roughness: 0.4 })
+    // ==========================================
+    // 3. MECHANICAL KEYBOARD & MOUSEPAD
+    // ==========================================
+    // Extended Desk Mat
+    const deskMat = new THREE.Mesh(
+      new THREE.BoxGeometry(10.0, 0.04, 4.2),
+      new THREE.MeshStandardMaterial({ color: 0x090e18, roughness: 0.8, metalness: 0.1 })
     );
-    kbBase.position.set(-2.5, 1.3, 2.4);
+    deskMat.position.set(-1.0, 1.24, 2.2);
+    this.group.add(deskMat);
+
+    // Keyboard Aluminum Frame
+    const kbBase = new THREE.Mesh(
+      new THREE.BoxGeometry(5.4, 0.18, 2.0),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8, roughness: 0.3 })
+    );
+    kbBase.position.set(-2.5, 1.35, 2.3);
     this.group.add(kbBase);
 
-    // 4. Realistic Gaming PC Tower (Shell / $PATH Station)
+    // Individual Keycap Row Clusters
+    const keyMat = new THREE.MeshStandardMaterial({ color: 0x030712, roughness: 0.5, metalness: 0.2 });
+    for (let r = 0; r < 4; r++) {
+      const keyRow = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.12, 0.35), keyMat);
+      keyRow.position.set(-2.5, 1.48, 1.7 + r * 0.42);
+      this.group.add(keyRow);
+    }
+
+    // Ergonomic Gaming Mouse
+    const mouseMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.7, roughness: 0.3 });
+    const mouseMesh = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.35, 1.3), mouseMat);
+    mouseMesh.position.set(2.2, 1.36, 2.4);
+    this.group.add(mouseMesh);
+
+    // ==========================================
+    // 4. PHOTOREALISTIC ATX TOWER PC CHASSIS (SHELL / $PATH)
+    // ==========================================
     const pcGroup = new THREE.Group();
-    pcGroup.position.set(4.5, 1.2, 0);
+    pcGroup.position.set(5.2, 1.2, 0);
 
     const towerMat = new THREE.MeshStandardMaterial({
-      color: 0x0a101d,
-      metalness: 0.85,
+      color: 0x050912,
+      metalness: 0.9,
       roughness: 0.25
     });
-    const towerMesh = new THREE.Mesh(new THREE.BoxGeometry(3.0, 4.8, 4.6), towerMat);
-    towerMesh.position.y = 2.4;
+    const towerMesh = new THREE.Mesh(new THREE.BoxGeometry(3.2, 5.4, 5.0), towerMat);
+    towerMesh.position.y = 2.7;
     pcGroup.add(towerMesh);
 
-    // Tinted Glass Side Panel
+    // Tempered Smoked Glass Side Panel
     const glassMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(4.2, 4.4),
-      new THREE.MeshStandardMaterial({
+      new THREE.PlaneGeometry(4.6, 5.0),
+      new THREE.MeshPhysicalMaterial({
         color: 0x00f3ff,
-        metalness: 0.9,
-        roughness: 0.1,
+        metalness: 0.1,
+        roughness: 0.05,
+        transmission: 0.85,
         transparent: true,
-        opacity: 0.25
+        opacity: 0.35
       })
     );
     glassMesh.rotation.y = -Math.PI / 2;
-    glassMesh.position.set(-1.51, 2.4, 0);
+    glassMesh.position.set(-1.61, 2.7, 0);
     pcGroup.add(glassMesh);
+
+    // Front Honeycomb Air Intake Grille
+    const grilleMat = new THREE.MeshStandardMaterial({ color: 0x020617, roughness: 0.9, metalness: 0.1 });
+    const frontGrille = new THREE.Mesh(new THREE.BoxGeometry(3.0, 4.8, 0.1), grilleMat);
+    frontGrille.position.set(0, 2.7, 2.55);
+    pcGroup.add(frontGrille);
+
+    // Internal Motherboard & Dual GPU Fans (visible through glass)
+    const innerGpu = new THREE.Mesh(
+      new THREE.BoxGeometry(0.8, 1.6, 3.8),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.85 })
+    );
+    innerGpu.position.set(0.2, 2.5, 0);
+    pcGroup.add(innerGpu);
 
     // Front RGB Accent Line
     const frontRgb = new THREE.Mesh(
-      new THREE.BoxGeometry(0.08, 4.2, 0.08),
-      new THREE.MeshBasicMaterial({ color: 0x00ff88 })
+      new THREE.BoxGeometry(0.08, 4.8, 0.08),
+      new THREE.MeshBasicMaterial({ color: 0x00f3ff })
     );
-    frontRgb.position.set(-1.42, 2.4, 2.2);
+    frontRgb.position.set(-1.52, 2.7, 2.56);
     pcGroup.add(frontRgb);
 
     // PC Under-glow ring
-    const pcHaloGeo = new THREE.RingGeometry(2.0, 2.4, 32);
+    const pcHaloGeo = new THREE.RingGeometry(2.2, 2.8, 32);
     const pcHaloMat = new THREE.MeshBasicMaterial({
       color: 0x00f3ff,
       transparent: true,
@@ -173,16 +229,16 @@ export class LayerUserSpace {
 
     this.sceneManager.registerInteractiveObject(bezel, {
       id: 'terminal',
-      title: '🖥️ Terminal Display & PTY Master',
-      layer: 'User Space',
+      title: '🖥️ Workstation Terminal Display & PTY Master',
+      layer: 'User Space (Ring 3)',
       summary: 'Captures keyboard events and prints text output to your screen.',
       details: 'Applications like GNOME Terminal, Alacritty, or VS Code write raw keyboard bytes into the pseudoterminal master device (/dev/ptmx).'
     });
 
     this.sceneManager.registerInteractiveObject(towerMesh, {
       id: 'lexer',
-      title: '🐚 Shell Parser & $PATH Finder',
-      layer: 'User Space (Bash/Zsh)',
+      title: '🐚 Shell Parser & $PATH Finder (Bash/Zsh)',
+      layer: 'User Space (Ring 3)',
       summary: 'Reads command text, checks aliases, and searches $PATH folders (/usr/bin) to find the program.',
       details: 'Bash tokenizes the command into arguments, evaluates variables ($HOME), and checks if the command exists on disk.'
     });

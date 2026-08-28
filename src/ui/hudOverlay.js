@@ -60,26 +60,30 @@ export class HudOverlay {
           <span class="side-syscall-badge" id="dir-syscall-badge">NO SYSCALL (USER MODE)</span>
         </div>
 
-        <!-- ONGOING PROCESS HEADLINE -->
-        <h2 class="side-process-title" id="dir-title">1. You Type "ls -la" on Keyboard</h2>
-        
-        <!-- ONGOING PROCESS EXPLANATION -->
-        <p class="side-process-desc" id="dir-desc">
-          When you press Enter, your terminal emulator captures raw characters and delivers them to the shell.
-        </p>
+        <!-- 1. WHAT IS HAPPENING CARD -->
+        <div class="side-what-card" id="dir-what-card">
+          <div class="side-what-header">
+            <span class="what-icon">📋</span>
+            <span class="what-title">WHAT IS HAPPENING?</span>
+          </div>
+          <h2 class="side-process-title" id="dir-title">1. You Type "ls -la" on Keyboard</h2>
+          <p class="side-process-desc" id="dir-desc">
+            When you press Enter, your terminal emulator captures raw characters and delivers them to the shell.
+          </p>
+        </div>
 
-        <!-- WHY AT THIS HARDWARE POINT SECTION -->
+        <!-- 2. WHY IS IT HAPPENING THERE ONLY CARD -->
         <div class="side-why-card" id="dir-why-card">
           <div class="side-why-header">
             <span class="why-icon">❓</span>
-            <span class="why-title">WHY AT THIS HARDWARE POINT?</span>
+            <span class="why-title">WHY IS IT HAPPENING THERE ONLY?</span>
           </div>
           <p class="side-why-text" id="dir-why-text">
             User Space (Ring 3) isolates input handling so that a misbehaving terminal app cannot corrupt operating system memory.
           </p>
         </div>
 
-        <!-- ANALOGY -->
+        <!-- 3. REAL WORLD ANALOGY CARD -->
         <div class="side-analogy-card" id="dir-analogy">
           💡 Analogy: Writing down your food order on a notepad at a restaurant.
         </div>

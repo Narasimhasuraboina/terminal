@@ -241,8 +241,20 @@ body, html {
   font-weight: 700;
 }
 
+/* 1. What is Happening Box */
+.side-what-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 9px;
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
 .side-process-title {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 800;
   color: #fff;
   line-height: 1.35;
@@ -252,6 +264,25 @@ body, html {
   font-size: 12.5px;
   line-height: 1.5;
   color: #cbd5e1;
+}
+
+.side-what-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.what-icon {
+  font-size: 13px;
+  filter: drop-shadow(0 0 4px rgba(0, 255, 136, 0.6));
+}
+
+.what-title {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: #00ff88;
+  letter-spacing: 0.8px;
 }
 
 /* Dedicated "Why at this point" callout box */
@@ -892,6 +923,30 @@ body, html {
   font-size: 13px;
   color: #e2e8f0;
   line-height: 1.5;
+}
+
+.bp-live-why {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.16), rgba(99, 102, 241, 0.12));
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 8px;
+  padding: 9px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bp-why-label {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.6px;
+}
+
+.bp-why-text {
+  font-size: 12px;
+  color: #e0f2fe;
+  line-height: 1.45;
 }
 
 .bp-live-analogy {
