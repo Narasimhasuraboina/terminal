@@ -191,7 +191,7 @@ export class LayerUserSpace {
     this.updateMonitorScreen('ls -la', ['drwxr-xr-x 5 user user 4096 Aug 28 src', '-rw-r--r-- 1 user user  320 package.json', 'user@linux:~$ ']);
   }
 
-  updateMonitorScreen(cmdText, outputLines = [], activeStep = '') {
+  updateMonitorScreen(cmdText, outputLines = [], activeStep = '', whyReason = '') {
     const ctx = this.screenCtx;
     if (!ctx) return;
 
@@ -217,25 +217,45 @@ export class LayerUserSpace {
     // Prompt & Typed Command
     ctx.font = 'bold 15px monospace';
     ctx.fillStyle = '#22c55e';
-    ctx.fillText('user@linux:~$ ', 18, 64);
+    ctx.fillText('user@linux:~$ ', 18, 60);
 
     ctx.fillStyle = '#00f3ff';
-    ctx.fillText(cmdText || 'ls -la', 142, 64);
+    ctx.fillText(cmdText || 'ls -la', 142, 60);
 
     // Active status line
     if (activeStep) {
       ctx.fillStyle = '#fbbf24';
       ctx.font = 'bold 12px monospace';
-      ctx.fillText(`⚡ Status: ${activeStep}`, 18, 94);
+      ctx.fillText(`⚡ Status: ${activeStep}`, 18, 86);
+    }
+
+    // Why at this point box on 3D Monitor
+    if (whyReason) {
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.2)';
+      ctx.strokeStyle = 'rgba(14, 165, 233, 0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(14, 98, 484, 52, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 11px monospace';
+      ctx.fillText('❓ WHY AT THIS HARDWARE POINT:', 22, 114);
+
+      ctx.fillStyle = '#e0f2fe';
+      ctx.font = '10.5px sans-serif';
+      const cleanReason = whyReason.length > 70 ? whyReason.substring(0, 68) + '...' : whyReason;
+      ctx.fillText(cleanReason, 22, 134);
     }
 
     // Terminal Outputs
-    ctx.font = '12px monospace';
-    ctx.fillStyle = '#cbd5e1';
-    let y = activeStep ? 122 : 98;
-    for (let i = 0; i < Math.min(8, outputLines.length); i++) {
+    ctx.font = '11px monospace';
+    ctx.fillStyle = '#94a3b8';
+    let y = whyReason ? 172 : (activeStep ? 112 : 90);
+    for (let i = 0; i < Math.min(5, outputLines.length); i++) {
       ctx.fillText(outputLines[i], 18, y);
-      y += 22;
+      y += 20;
     }
 
     this.screenTexture.needsUpdate = true;

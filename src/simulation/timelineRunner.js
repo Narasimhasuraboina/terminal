@@ -148,7 +148,12 @@ export class TimelineRunner {
     // 3. Update 3D Live Desktop Monitor Screen in-world
     if (this.layers.userspace && this.layers.userspace.updateMonitorScreen) {
       const outputList = stage.terminalOutput ? stage.terminalOutput.split('\n') : [`Step ${this.currentStageIndex + 1}: ${stage.name}`];
-      this.layers.userspace.updateMonitorScreen(this.currentPlan.name, outputList, stage.simpleTitle || stage.name);
+      this.layers.userspace.updateMonitorScreen(
+        this.currentPlan.name,
+        outputList,
+        stage.simpleTitle || stage.name,
+        stage.whyHappeningHere || ''
+      );
     }
 
     // 4. Play Stage Sound
