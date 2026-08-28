@@ -179,9 +179,9 @@ body, html {
   position: absolute;
   top: 58px;
   right: 14px;
-  width: 390px;
+  width: 410px;
   max-width: calc(100vw - 28px);
-  background: rgba(7, 13, 26, 0.95);
+  background: rgba(7, 13, 26, 0.96);
   border: 1px solid var(--panel-border);
   border-radius: 14px;
   padding: 14px 18px;
@@ -254,6 +254,41 @@ body, html {
   color: #cbd5e1;
 }
 
+/* Dedicated "Why at this point" callout box */
+.side-why-card {
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  border-radius: 8px;
+  padding: 8px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.side-why-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.why-icon {
+  font-size: 13px;
+}
+
+.why-title {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.6px;
+}
+
+.side-why-text {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #e0f2fe;
+}
+
 .side-analogy-card {
   background: rgba(255, 170, 0, 0.1);
   border: 1px solid rgba(255, 170, 0, 0.3);
@@ -270,7 +305,7 @@ body, html {
   font-weight: 700;
   color: var(--text-muted);
   letter-spacing: 0.8px;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .side-stepper-wrap {

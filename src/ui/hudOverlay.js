@@ -68,6 +68,17 @@ export class HudOverlay {
           When you press Enter, your terminal emulator captures raw characters and delivers them to the shell.
         </p>
 
+        <!-- WHY AT THIS HARDWARE POINT SECTION -->
+        <div class="side-why-card" id="dir-why-card">
+          <div class="side-why-header">
+            <span class="why-icon">❓</span>
+            <span class="why-title">WHY AT THIS HARDWARE POINT?</span>
+          </div>
+          <p class="side-why-text" id="dir-why-text">
+            User Space (Ring 3) isolates input handling so that a misbehaving terminal app cannot corrupt operating system memory.
+          </p>
+        </div>
+
         <!-- ANALOGY -->
         <div class="side-analogy-card" id="dir-analogy">
           💡 Analogy: Writing down your food order on a notepad at a restaurant.
@@ -248,6 +259,7 @@ export class HudOverlay {
     const layerBadge = this.container.querySelector('#dir-layer-badge');
     const titleEl = this.container.querySelector('#dir-title');
     const descEl = this.container.querySelector('#dir-desc');
+    const whyTextEl = this.container.querySelector('#dir-why-text');
     const analogyEl = this.container.querySelector('#dir-analogy');
     const stepInfoEl = this.container.querySelector('#timeline-step-info');
 
@@ -255,6 +267,7 @@ export class HudOverlay {
     if (layerBadge) layerBadge.textContent = stage.layer.toUpperCase();
     if (titleEl) titleEl.textContent = stage.name;
     if (descEl) descEl.textContent = stage.simpleExplanation || stage.explanation;
+    if (whyTextEl) whyTextEl.textContent = stage.whyHappeningHere || 'Executes at this specific hardware subsystem boundary to maintain CPU privilege isolation and system stability.';
     if (analogyEl) analogyEl.textContent = stage.analogy || '💡 Processing operating system request.';
     if (stepInfoEl) stepInfoEl.textContent = `Step ${stageIndex + 1} of ${totalStages}`;
 

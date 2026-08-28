@@ -10,7 +10,7 @@ export const COMMAND_PRESETS = {
         timeOffset: 0,
         name: '1. You Type "ls -la" on Keyboard',
         simpleTitle: '1. Keystrokes',
-        layer: 'User Space',
+        layer: 'User Space (Terminal)',
         activeNode: 'terminal',
         route: null,
         sound: 'key',
@@ -18,8 +18,9 @@ export const COMMAND_PRESETS = {
         ring: 3,
         syscall: null,
         registers: { RIP: '0x7fff4010', RAX: '0x00000000', RSP: '0x7ffeef80', RDI: '0x0' },
-        simpleExplanation: 'When you press Enter, your terminal app (like GNOME Terminal, Alacritty, or VS Code) captures the raw characters "ls -la\\n" and sends them to the pseudo-terminal device (/dev/ptmx).',
+        simpleExplanation: 'When you press Enter, your terminal emulator captures raw characters and sends them to the pseudo-terminal device (/dev/ptmx).',
         explanation: 'Keystrokes "ls -la\\n" are sent through the display server to the Terminal Emulator, which writes them into the Pseudoterminal Master (/dev/ptmx).',
+        whyHappeningHere: 'User Space (Ring 3) isolates input handling so that a misbehaving terminal app cannot corrupt operating system memory.',
         analogy: '💡 Analogy: You write an order on a notepad at a restaurant and hand it to the waiter.',
         codeSnippet: `write(master_ptmx_fd, "ls -la\\n", 7);`,
         terminalOutput: `user@linux:~$ ls -la`
@@ -38,8 +39,9 @@ export const COMMAND_PRESETS = {
         ring: 3,
         syscall: null,
         registers: { RIP: '0x5555556a', RAX: '0x00000002', RSP: '0x7ffeef20', RDI: 'argv[0]="ls"' },
-        simpleExplanation: 'The Shell (Bash/Zsh) breaks the text into two parts: program name ("ls") and flags ("-la"). It checks if you have any aliases or variables like $HOME.',
+        simpleExplanation: 'The Shell (Bash/Zsh) breaks the text into tokens: program name ("ls") and flags ("-la"). It checks aliases and environment variables.',
         explanation: 'Bash lexes the string into tokens ["ls", "-la"], checks for shell aliases, and builds the command AST node.',
+        whyHappeningHere: 'The shell acts as the user interpreter. The Linux kernel does NOT parse text strings—it only accepts exact binary memory pointers.',
         analogy: '💡 Analogy: The waiter reads your order: "ls" (the dish) with "-la" (extra options).',
         codeSnippet: `COMMAND *cmd = parse_string("ls -la");\n// cmd->type = CMD_SIMPLE, cmd->args = ["ls", "-la", NULL]`,
         terminalOutput: null
@@ -50,7 +52,7 @@ export const COMMAND_PRESETS = {
         timeOffset: 6400,
         name: '3. Shell Finds the Program on Disk ($PATH)',
         simpleTitle: '3. $PATH Finder',
-        layer: 'User Space (Shell)',
+        layer: 'User Space (Shell $PATH)',
         activeNode: 'path',
         route: { from: 'lexer', to: 'path', color: 0x00f3ff },
         sound: 'key',
@@ -58,8 +60,9 @@ export const COMMAND_PRESETS = {
         ring: 3,
         syscall: 'faccessat2()',
         registers: { RIP: '0x55555580', RAX: '0x00000106', RSP: '0x7ffeef00', RDI: '"/usr/bin/ls"' },
-        simpleExplanation: 'The shell does not know how to list files itself. It searches folders in your $PATH variable and discovers the compiled program located at /usr/bin/ls.',
+        simpleExplanation: 'The shell does not know how to list files itself. It searches folders in your $PATH variable and discovers the compiled executable at /usr/bin/ls.',
         explanation: 'Shell checks if "ls" is a builtin (no). It traverses $PATH and locates the ELF executable at /usr/bin/ls.',
+        whyHappeningHere: 'Commands are standalone binary files stored on disk so developers can add new tools without recompiling the operating system kernel.',
         analogy: '💡 Analogy: Looking up the recipe book in the kitchen cabinet (/usr/bin/ls).',
         codeSnippet: `if (faccessat2(AT_FDCWD, "/usr/bin/ls", X_OK, 0) == 0) {\n  target_binary = "/usr/bin/ls";\n}`,
         terminalOutput: null
@@ -78,9 +81,10 @@ export const COMMAND_PRESETS = {
         ring: 0,
         syscall: 'clone3() / fork() [57]',
         registers: { RIP: '0x7fff4055', RAX: '4129 (New PID)', RSP: '0x7ffeef00', RDI: 'SIGCHLD' },
-        simpleExplanation: 'CRITICAL STEP: If the shell executed "ls" directly, the shell itself would end! So it asks the Linux Kernel to clone an identical child worker process with its own PID (e.g. 4129).',
+        simpleExplanation: 'If the shell ran "ls" inside itself, the shell process would be replaced and terminated! So it asks the kernel to clone a child worker process (PID 4129).',
         explanation: 'Bash calls fork() to create a child process. The kernel duplicates the task_struct, allocates PID 4129 with Copy-On-Write (COW) memory.',
-        analogy: '💡 Analogy: The head chef hires an assistant worker to cook this specific meal so the head chef can keep taking orders.',
+        whyHappeningHere: 'Process cloning (fork) ensures process isolation—when `ls` finishes and exits, your parent shell remains running and ready.',
+        analogy: '💡 Analogy: The head chef hires an assistant worker to cook this specific dish so the head chef can keep taking orders.',
         codeSnippet: `pid_t pid = fork();\nif (pid == 0) {\n  /* Child Process (PID 4129) */\n  execve("/usr/bin/ls", argv, envp);\n}`,
         terminalOutput: null
       },
@@ -98,8 +102,9 @@ export const COMMAND_PRESETS = {
         ring: 0,
         syscall: 'execve(59)',
         registers: { RIP: '0xffffffff8100', RAX: '59', RSP: '0xffffc90000', RDI: '0x7fff4080' },
-        simpleExplanation: 'The child process calls execve("/usr/bin/ls"). CPU switches from User Mode (Ring 3) to Kernel Mode (Ring 0). The kernel wipes the child memory and replaces it with the "ls" machine code.',
+        simpleExplanation: 'The child calls execve("/usr/bin/ls"). CPU switches to Ring 0 (Kernel Mode). The kernel wipes child memory and loads the compiled "ls" machine code.',
         explanation: 'Child process executes `syscall` instruction with RAX=59. CPU switches hardware privilege level to Ring 0 (Kernel).',
+        whyHappeningHere: 'User programs lack hardware privilege to overwrite memory pages directly. Only the CPU running in Ring 0 is authorized to reload executable binaries.',
         analogy: '💡 Analogy: The assistant worker clears their desk and opens the exact manual for cooking dish #59.',
         codeSnippet: `mov rax, 59       ; __NR_execve\nmov rdi, path_ptr ; "/usr/bin/ls"\nsyscall          ; Switch to Ring 0`,
         terminalOutput: null
@@ -118,9 +123,10 @@ export const COMMAND_PRESETS = {
         ring: 0,
         syscall: 'mmap() [9]',
         registers: { CR3: '0x1a820000', RIP: '0x7ffff7fd', RSP: '0x7fffffffe0', RAX: '0x0' },
-        simpleExplanation: 'The Memory Management Unit maps virtual memory: .text (executable code), .data (variables), and Stack (command arguments "-la"). Dynamic libraries (libc.so) are loaded.',
+        simpleExplanation: 'The Memory Management Unit sets up virtual memory: .text (machine code), .data (variables), and Stack (arguments "-la"). Dynamic libraries (libc.so) are mapped.',
         explanation: 'Kernel parses the ELF header of /usr/bin/ls, clears previous address space, maps .text (RX), .rodata (R), .data (RW), Stack and Heap, and loads ld-linux dynamic linker.',
-        analogy: '💡 Analogy: Setting up the workstation with all needed cutting boards and ingredients in dedicated zones.',
+        whyHappeningHere: 'Virtual Memory (MMU) gives every process the illusion of having the entire RAM to itself, protecting processes from overwriting each other.',
+        analogy: '💡 Analogy: Setting up a dedicated workstation with ingredients in separate marked bins.',
         codeSnippet: `load_elf_binary(bprm);\nsetup_arg_pages(bprm, randomize_va_space);\ncreate_elf_tables(bprm);`,
         terminalOutput: null
       },
@@ -138,8 +144,9 @@ export const COMMAND_PRESETS = {
         ring: 0,
         syscall: 'getdents64() [217]',
         registers: { RIP: '0x7ffff7e2', RAX: '217', RDI: '3 (dir_fd)', RSI: '0x55555578' },
-        simpleExplanation: '`ls` asks the kernel for directory entries. The Virtual File System (VFS) reads the directory inode from the ext4 filesystem to fetch filenames, file sizes, permissions (rwxr-xr-x), and timestamps.',
+        simpleExplanation: '`ls` asks the kernel for directory entries. The Virtual File System (VFS) reads directory inodes from the ext4 filesystem to fetch filenames, sizes, and permissions (rwxr-xr-x).',
         explanation: '`ls` opens current working directory (`openat`) and reads directory entry records (inodes, filenames, file types) via `getdents64()`.',
+        whyHappeningHere: 'Hardware storage (NVMe SSD / HDD) stores directory tables physically. VFS translates raw NAND blocks into readable POSIX file records.',
         analogy: '💡 Analogy: Opening the storage room cabinet index to see what items are on the shelves.',
         codeSnippet: `int fd = openat(AT_FDCWD, ".", O_RDONLY|O_DIRECTORY);\nstruct linux_dirent64 *d = malloc(buf_size);\nsyscall(SYS_getdents64, fd, d, buf_size);`,
         terminalOutput: null
@@ -158,9 +165,10 @@ export const COMMAND_PRESETS = {
         ring: 3,
         syscall: 'write(1) & exit_group(0)',
         registers: { RIP: '0x7ffff7d0', RAX: '0 (exit code)', RSP: '0x7fffffffd0', RDI: '0' },
-        simpleExplanation: '`ls` formats the text with colors/columns, writes it to File Descriptor 1 (stdout). The child exits with code 0. Parent shell reaps the child and shows your prompt again!',
+        simpleExplanation: '`ls` formats text with colors, writes it to File Descriptor 1 (stdout). The child exits with code 0. Parent shell reaps the child and shows your prompt again!',
         explanation: '`ls` writes formatted directory listing bytes to file descriptor 1 (stdout), then calls `exit_group(0)`. Kernel reaps process and returns shell prompt.',
-        analogy: '💡 Analogy: The assistant places the prepared meal on the serving counter and punches out. The head chef is ready for your next order.',
+        whyHappeningHere: 'Everything in Unix is a file descriptor stream (stdout = 1). Writing to fd 1 hands bytes back to the pseudoterminal display on your screen.',
+        analogy: '💡 Analogy: The assistant worker places the prepared meal on the serving counter and punches out. The head chef is ready for your next order.',
         codeSnippet: `write(STDOUT_FILENO, output_str, len);\nexit_group(0);`,
         terminalOutput: `total 32
 drwxr-xr-x  5 user user 4096 Aug 28 12:50 .
@@ -195,6 +203,7 @@ user@linux:~$ `
         registers: { RIP: '0x55555550', RAX: '0', RSP: '0x7ffeef00', RDI: '"cat"' },
         simpleExplanation: 'Shell parses command and forks /usr/bin/cat with argument "file.txt".',
         explanation: 'Shell reads "cat file.txt", validates binary location at /usr/bin/cat.',
+        whyHappeningHere: 'User commands enter through the terminal stdin stream before invoking system calls.',
         analogy: '💡 Analogy: Asking a library assistant to fetch a specific book from the archives.',
         codeSnippet: `execve("/usr/bin/cat", ["cat", "file.txt"], envp);`,
         terminalOutput: `user@linux:~$ cat file.txt`
@@ -215,6 +224,7 @@ user@linux:~$ `
         registers: { RAX: '257', RDI: 'AT_FDCWD', RSI: '"file.txt"', RDX: 'O_RDONLY' },
         simpleExplanation: '`cat` calls openat(). The kernel verifies file permissions and assigns integer File Descriptor 3 to represent this open file.',
         explanation: 'Kernel traverses directory entries to find "file.txt", retrieving its ext4 inode #94821 and file permissions.',
+        whyHappeningHere: 'The VFS security layer verifies read permissions (r--) before granting access to physical storage.',
         analogy: '💡 Analogy: The librarian verifies your library card and gives you a claim ticket (fd 3).',
         codeSnippet: `int fd = openat(AT_FDCWD, "file.txt", O_RDONLY); // Returns fd 3`,
         terminalOutput: null
@@ -235,6 +245,7 @@ user@linux:~$ `
         registers: { RIP: '0xffffffff8124', RAX: '0x0 (Cache Miss)', RSP: '0xffffc900' },
         simpleExplanation: 'Before touching the slow physical SSD/Hard drive, the kernel checks if the file pages are already sitting in RAM (Page Cache). If it is a Cache Hit, it skips disk I/O entirely!',
         explanation: 'Kernel checks if file 4KB pages reside in RAM. On Cache Miss, it dispatches a Block I/O request to hardware storage.',
+        whyHappeningHere: 'RAM is 1,000x faster than flash storage. Checking the Page Cache first delivers blazing fast read speeds.',
         analogy: '💡 Analogy: Checking if the book is already resting on the quick-access reading table.',
         codeSnippet: `struct page *page = find_get_page(mapping, index);\nif (!page) {\n  page_cache_sync_readahead(...);\n}`,
         terminalOutput: null
@@ -255,6 +266,7 @@ user@linux:~$ `
         registers: { RIP: '0xffffffff8180', RAX: '0x0', RDI: 'struct bio*' },
         simpleExplanation: 'On a Cache Miss, the storage controller reads the magnetic/flash sectors from disk and copies them straight into RAM via Direct Memory Access (DMA).',
         explanation: 'Storage controller transfers raw disk sectors directly into physical RAM buffers via Direct Memory Access (DMA).',
+        whyHappeningHere: 'DMA hardware transfers bytes without wasting CPU cycles, leaving the processor free for other computations.',
         analogy: '💡 Analogy: Walking to the deep underground archive vault to bring the physical book to the front desk.',
         codeSnippet: `submit_bio(&bio);\n// Hardware interrupt signals DMA completion`,
         terminalOutput: null
@@ -275,6 +287,7 @@ user@linux:~$ `
         registers: { RAX: '1 (sys_write)', RDI: '1 (stdout)', RSI: '0x55555560', RDX: '64' },
         simpleExplanation: '`cat` reads the bytes from the RAM buffer and writes them to stdout (1). The terminal window displays the text.',
         explanation: 'cat copies bytes from page cache into user buffer, writes to stdout descriptor 1, and the terminal displays the file contents.',
+        whyHappeningHere: 'Process exits cleanly and closes File Descriptor 3, freeing the kernel file handle.',
         analogy: '💡 Analogy: Handing the book pages to the reader.',
         codeSnippet: `read(fd, buffer, 4096);\nwrite(STDOUT_FILENO, buffer, bytes_read);`,
         terminalOutput: `[SYSTEM LOG - Linux Kernel 6.11]
@@ -307,6 +320,7 @@ user@linux:~$ `
         registers: { RAX: '293 (sys_pipe2)', RDI: 'pipefd[2]' },
         simpleExplanation: 'The shell sees the pipe "|" character and asks the kernel to create a circular 64KB RAM buffer with two file descriptors: read end (fd 3) and write end (fd 4).',
         explanation: 'Shell calls pipe2() to create a unidirectional kernel FIFO ring buffer in RAM with read fd[3] and write fd[4].',
+        whyHappeningHere: 'Unix pipelines connect processes directly in RAM so that intermediate results never touch slow disk storage.',
         analogy: '💡 Analogy: Building a conveyor belt between two worker stations.',
         codeSnippet: `int p[2];\npipe(p); // p[0] = 3 (read end), p[1] = 4 (write end)`,
         terminalOutput: `user@linux:~$ grep "WARN" log | wc -l`
@@ -327,6 +341,7 @@ user@linux:~$ `
         registers: { PID_A: '5120 (grep)', PID_B: '5121 (wc)' },
         simpleExplanation: 'Shell spawns two separate child processes: PID A will run "grep", PID B will run "wc". Both run at the same time!',
         explanation: 'Shell forks two child processes concurrently to run both sides of the pipeline.',
+        whyHappeningHere: 'Running both programs simultaneously enables true multi-core parallel streaming across CPU cores.',
         analogy: '💡 Analogy: Hiring Worker A (filterer) and Worker B (counter) to work simultaneously.',
         codeSnippet: `pid_t pid1 = fork(); // grep process\npid_t pid2 = fork(); // wc process`,
         terminalOutput: null
@@ -347,6 +362,7 @@ user@linux:~$ `
         registers: { RAX: '33 (sys_dup2)', RDI: '4', RSI: '1' },
         simpleExplanation: '`dup2()` redirects grep\'s stdout (1) into the pipe\'s write end, and redirects wc\'s stdin (0) to read from the pipe\'s read end. Neither program knows a pipe exists—they just read and write normally!',
         explanation: 'Child 1 duplicates write pipe end to stdout (1). Child 2 duplicates read pipe end to stdin (0). Unused pipe ends are closed.',
+        whyHappeningHere: 'File Descriptor redirection allows standard Unix tools to be chained infinitely without modifying their source code.',
         analogy: '💡 Analogy: Snapping the conveyor belt outlet directly into Worker B\'s input bin.',
         codeSnippet: `// Child 1 (grep):\ndup2(p[1], STDOUT_FILENO); close(p[0]);\n// Child 2 (wc):\ndup2(p[0], STDIN_FILENO); close(p[1]);`,
         terminalOutput: null
@@ -367,6 +383,7 @@ user@linux:~$ `
         registers: { RIP: '0xffffffff8130', RAX: '0', CFS_VTIME: '124040' },
         simpleExplanation: '`grep` pushes matching lines into the kernel RAM buffer. As lines arrive, the CPU wakes up `wc` to read and count them. Zero disk storage is used!',
         explanation: '`grep` writes matched lines into kernel pipe buffer. If buffer is full, grep sleeps and scheduler yields CPU to `wc` to read from stdin.',
+        whyHappeningHere: 'The CPU Completely Fair Scheduler (CFS) automatically balances execution between producer and consumer threads in RAM.',
         analogy: '💡 Analogy: Worker A puts matched items on the conveyor belt, Worker B counts them instantly.',
         codeSnippet: `pipe_write(struct kiocb *iocb, struct iov_iter *from);\npipe_read(struct kiocb *iocb, struct iov_iter *to);`,
         terminalOutput: null
@@ -387,6 +404,7 @@ user@linux:~$ `
         registers: { RAX: '3', RDI: '1', RSI: '"42\\n"' },
         simpleExplanation: '`grep` reaches end of file and exits. `wc` counts the total matches (42), writes "42\\n" to your terminal, and exits. Both processes are cleaned up.',
         explanation: '`wc -l` finishes counting lines received from pipe and writes the total count to stdout.',
+        whyHappeningHere: 'When all write ends of a pipe close, reading processes receive EOF (End of File) and terminate cleanly.',
         analogy: '💡 Analogy: Worker B shouts the final total "42" to the manager.',
         codeSnippet: `write(1, "42\\n", 3);\nwaitpid(pid1, &s1, 0); waitpid(pid2, &s2, 0);`,
         terminalOutput: `42\nuser@linux:~$ `
@@ -415,6 +433,7 @@ user@linux:~$ `
         registers: { RAX: '258', RDI: 'AT_FDCWD', RSI: '"my_project"', RDX: '0777 (mode)' },
         simpleExplanation: '`mkdir` calls `mkdirat()` asking the kernel to create a directory named "my_project" with permissions 0777 (adjusted by your umask to 0755).',
         explanation: 'mkdir invokes mkdirat() passing current working directory handle and permission mode mask modified by umask.',
+        whyHappeningHere: 'Directory structure is protected kernel metadata—user applications cannot directly modify filesystem sector tables.',
         analogy: '💡 Analogy: Asking the warehouse manager to reserve a new empty labeled storage room.',
         codeSnippet: `sys_mkdirat(AT_FDCWD, "my_project", 0777);`,
         terminalOutput: `user@linux:~$ mkdir my_project`
@@ -435,6 +454,7 @@ user@linux:~$ `
         registers: { INODE_ID: '#105432', MODE: 'S_IFDIR | 0755', LINKS: '2' },
         simpleExplanation: 'The ext4 filesystem searches the inode bitmap for a free inode ID (e.g. #105432), sets type to Directory, and links "." and "..".',
         explanation: 'Filesystem allocates a free inode from the inode bitmap, sets directory flag (S_IFDIR), and links count to 2 (. and parent).',
+        whyHappeningHere: 'In Linux, every directory is represented by an Inode with links count initialized to 2 (pointing to itself and parent).',
         analogy: '💡 Analogy: Assigning Room #105432 and programming the electronic door key.',
         codeSnippet: `struct inode *inode = ext4_new_inode(dir, S_IFDIR | mode);\next4_add_entry(dir, dentry, inode);`,
         terminalOutput: null
@@ -455,6 +475,7 @@ user@linux:~$ `
         registers: { TID: '9042', BLOCK_GROUP: '3' },
         simpleExplanation: 'To prevent data corruption if power cuts off, ext4 logs this change to the filesystem journal (JBD2) before confirming it on the disk superblock.',
         explanation: 'Ext4 writes the metadata transaction to the JBD2 journal to ensure crash-consistency before flushing to the superblock.',
+        whyHappeningHere: 'Journaling guarantees filesystem integrity across sudden reboots and power outages.',
         analogy: '💡 Analogy: Writing the transaction into the permanent ledger first so it cannot be lost.',
         codeSnippet: `jbd2_journal_start(journal, 2);\njbd2_journal_stop(handle);`,
         terminalOutput: null
@@ -475,6 +496,7 @@ user@linux:~$ `
         registers: { RAX: '0' },
         simpleExplanation: 'Directory "my_project" is now live on disk and visible to all programs. Process exits cleanly with code 0.',
         explanation: 'Directory "my_project" is registered in parent directory entry table. Process returns exit code 0.',
+        whyHappeningHere: 'Directory is instantly indexed in the kernel dentry cache for fast future lookups.',
         analogy: '💡 Analogy: The new room is unlocked and ready for files.',
         codeSnippet: `return 0;`,
         terminalOutput: `user@linux:~$ `
@@ -503,6 +525,7 @@ user@linux:~$ `
         registers: { RAX: '62', RDI: '1337 (Target PID)', RSI: '9 (SIGKILL)' },
         simpleExplanation: '`kill` command asks the kernel to send signal 9 (SIGKILL) to PID 1337. Unlike SIGTERM (15), SIGKILL cannot be blocked or ignored by the program!',
         explanation: 'kill command executes sys_kill to request immediate termination of target PID 1337.',
+        whyHappeningHere: 'Only the kernel has authority to forcibly terminate unresponsive processes that refuse standard exit signals.',
         analogy: '💡 Analogy: An emergency power shutoff switch pulled by building security.',
         codeSnippet: `kill(1337, SIGKILL);`,
         terminalOutput: `user@linux:~$ kill -9 1337`
@@ -523,6 +546,7 @@ user@linux:~$ `
         registers: { TASK_PTR: '0xffff88812000', STATE: 'TASK_RUNNING' },
         simpleExplanation: 'Kernel searches its internal process hash table for PID 1337 and verifies you have permission (same user or root) to terminate it.',
         explanation: 'Kernel finds target task_struct in PID hash table and verifies EUID/UID permission to signal the process.',
+        whyHappeningHere: 'Linux security checks prevent standard users from killing processes belonging to other users or root.',
         analogy: '💡 Analogy: Security guards check their personnel database to locate worker 1337.',
         codeSnippet: `struct task_struct *p = find_task_by_vpid(1337);\nsend_sig_info(SIGKILL, SEND_SIG_PRIV, p);`,
         terminalOutput: null
@@ -543,6 +567,7 @@ user@linux:~$ `
         registers: { STATE: 'TASK_DEAD', MM: 'FREED', FD_TABLE: 'CLOSED' },
         simpleExplanation: 'The kernel immediately invokes do_exit(). It unmaps all virtual RAM pages, closes all open file handles/sockets, and marks the process state as TASK_DEAD.',
         explanation: 'SIGKILL cannot be caught or ignored. Kernel immediately invokes do_exit(), frees virtual memory pages, closes all open file descriptors, and notifies parent with SIGCHLD.',
+        whyHappeningHere: 'Automatic resource reclamation guarantees that killed processes never leak RAM, file handles, or network sockets.',
         analogy: '💡 Analogy: Instantly clearing the desk, locking the doors, and reclaiming company badge.',
         codeSnippet: `do_exit(SIGKILL);\nexit_mm(tsk);\nexit_files(tsk);`,
         terminalOutput: null
@@ -563,6 +588,7 @@ user@linux:~$ `
         registers: { RAX: '0' },
         simpleExplanation: 'Parent process is sent SIGCHLD to notify it of death. Terminal prints "[Killed]" notification and gives back control.',
         explanation: 'Target process 1337 terminated. Terminal returns prompt.',
+        whyHappeningHere: 'The parent shell reaps the zombie child exit code and restores user command prompt.',
         analogy: '💡 Analogy: Security reports job done. Ready for next task.',
         codeSnippet: `return 0;`,
         terminalOutput: `[1]+  Killed                  ./heavy_worker\nuser@linux:~$ `
