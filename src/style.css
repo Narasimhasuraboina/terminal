@@ -3,7 +3,7 @@
 :root {
   --bg-dark: #030712;
   --panel-bg: rgba(9, 15, 30, 0.94);
-  --panel-border: rgba(0, 243, 255, 0.22);
+  --panel-border: rgba(0, 243, 255, 0.24);
   --accent-cyan: #00f3ff;
   --accent-magenta: #ff0077;
   --accent-green: #00ff88;
@@ -47,21 +47,14 @@ body, html {
 }
 
 /* ============================================================
-   TOP UNIFIED COMMAND & STAGE DIRECTOR BANNER
+   TOP SLIM STATUS HEADER
 ============================================================ */
-.hud-top-wrapper {
+.hud-top-bar {
   position: absolute;
   top: 10px;
   left: 14px;
   right: 14px;
   z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-}
-
-.hud-top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -69,7 +62,7 @@ body, html {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 12px;
-  padding: 6px 14px;
+  padding: 7px 16px;
   backdrop-filter: blur(16px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
   pointer-events: auto;
@@ -180,104 +173,120 @@ body, html {
 }
 
 /* ============================================================
-   PROMINENT WHAT IS HAPPENING STAGE BANNER CARD
+   SIDEWAYS LIVE PROCESS STORY PANEL (RIGHT SIDEBAR)
 ============================================================ */
-.stage-banner-card {
+.side-process-panel {
+  position: absolute;
+  top: 58px;
+  right: 14px;
+  width: 390px;
+  max-width: calc(100vw - 28px);
   background: rgba(7, 13, 26, 0.95);
   border: 1px solid var(--panel-border);
-  border-radius: 12px;
-  padding: 10px 16px;
+  border-radius: 14px;
+  padding: 14px 18px;
   backdrop-filter: blur(20px);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 243, 255, 0.1);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(0, 243, 255, 0.1);
+  z-index: 20;
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  pointer-events: auto;
+  gap: 8px;
+  transition: all 0.3s ease;
 }
 
-.stage-meta-row {
+.side-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.side-badge-group {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 2px;
 }
 
-.stage-pill {
-  font-size: 9.5px;
+.side-step-badge {
+  font-size: 10px;
   font-family: var(--font-mono);
   font-weight: 700;
   color: var(--accent-cyan);
   background: rgba(0, 243, 255, 0.12);
-  padding: 2px 7px;
-  border-radius: 5px;
+  padding: 2px 8px;
+  border-radius: 6px;
   border: 1px solid rgba(0, 243, 255, 0.3);
 }
 
-.stage-layer-pill {
-  font-size: 9.5px;
+.side-layer-badge {
+  font-size: 10px;
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.stage-syscall-pill {
-  font-size: 9.5px;
+.side-syscall-badge {
+  font-size: 10px;
   font-family: var(--font-mono);
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.05);
-  padding: 2px 7px;
-  border-radius: 5px;
-  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 6px;
 }
 
-.stage-syscall-pill.has-syscall {
+.side-syscall-badge.has-syscall {
   color: var(--accent-magenta);
   background: rgba(255, 0, 119, 0.15);
   border: 1px solid rgba(255, 0, 119, 0.35);
   font-weight: 700;
 }
 
-.stage-headline {
+.side-process-title {
   font-size: 15px;
   font-weight: 800;
   color: #fff;
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
-.stage-description {
-  font-size: 12px;
-  line-height: 1.45;
+.side-process-desc {
+  font-size: 12.5px;
+  line-height: 1.5;
   color: #cbd5e1;
 }
 
-.stage-analogy-box {
+.side-analogy-card {
   background: rgba(255, 170, 0, 0.1);
   border: 1px solid rgba(255, 170, 0, 0.3);
-  border-radius: 6px;
-  padding: 5px 8px;
-  font-size: 11px;
-  line-height: 1.35;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 11.5px;
+  line-height: 1.4;
   color: #fde68a;
 }
 
-/* Stepper Pills */
-.stage-stepper-wrap {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow-x: auto;
-  padding-top: 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+.side-stepper-title {
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  margin-top: 4px;
 }
 
-.step-nav-pill {
+.side-stepper-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.side-nav-pill {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-muted);
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 5px;
   font-size: 10px;
   font-family: var(--font-mono);
@@ -286,44 +295,37 @@ body, html {
   transition: all 0.2s ease;
 }
 
-.pill-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #475569;
+.side-nav-num {
+  font-weight: 700;
+  color: var(--accent-cyan);
 }
 
-.step-nav-pill.passed {
+.side-nav-pill.passed {
   border-color: rgba(0, 255, 136, 0.3);
   color: var(--accent-green);
 }
-.step-nav-pill.passed .pill-dot {
-  background: var(--accent-green);
+.side-nav-pill.passed .side-nav-num {
+  color: var(--accent-green);
 }
 
-.step-nav-pill.active {
+.side-nav-pill.active {
   background: rgba(0, 243, 255, 0.18);
   border-color: var(--accent-cyan);
   color: #fff;
   font-weight: 700;
   box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
 }
-.step-nav-pill.active .pill-dot {
-  background: var(--accent-cyan);
-  box-shadow: 0 0 6px var(--accent-cyan);
-}
 
-/* Timer Track */
-.stage-timer-track {
+.side-timer-wrap {
   width: 100%;
-  height: 2.5px;
+  height: 3px;
   background: rgba(255, 255, 255, 0.06);
   border-radius: 2px;
   overflow: hidden;
   margin-top: 2px;
 }
 
-.stage-timer-fill {
+.side-timer-bar {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #00f3ff, #00ff88);

@@ -16,74 +16,73 @@ export class HudOverlay {
 
   render() {
     this.container.innerHTML = `
-      <!-- TOP UNIFIED COMMAND & STAGE DIRECTOR BANNER -->
-      <div class="hud-top-wrapper">
+      <!-- TOP SLIM STATUS HEADER -->
+      <div class="hud-top-bar">
+        <div class="hud-brand">
+          <span class="brand-logo">🐧</span>
+          <div class="brand-text">
+            <span class="brand-title">HOW LINUX RUNS COMMANDS</span>
+            <span class="brand-sub">Interactive 3D Subsystem Visualizer</span>
+          </div>
+        </div>
+
+        <div class="hud-center-controls">
+          <!-- CPU PRIVILEGE RING BADGE -->
+          <div class="stat-value ring-badge ring-3" id="hud-ring-val">
+            🛡️ RING 3 (USER SPACE)
+          </div>
+
+          <button class="hud-action-btn blueprint-btn" id="btn-blueprint">
+            <span class="btn-icon">🗺️</span> 2D Circuit Flowchart
+          </button>
+        </div>
+
+        <div class="hud-top-actions">
+          <button class="hud-action-btn guide-btn" id="btn-guide">
+            <span class="btn-icon">📖</span> Guide
+          </button>
+          <button class="hud-action-btn quiz-btn" id="btn-quiz">
+            <span class="btn-icon">🎯</span> Quiz
+          </button>
+          <button class="hud-action-btn" id="btn-sound-toggle">
+            <span class="btn-icon" id="sound-icon">🔊</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SIDEWAYS LIVE PROCESS STORY PANEL (RIGHT SIDEBAR) -->
+      <div class="side-process-panel" id="side-process-panel">
+        <div class="side-panel-header">
+          <div class="side-badge-group">
+            <span class="side-step-badge" id="dir-step-badge">STEP 1 OF 8</span>
+            <span class="side-layer-badge" id="dir-layer-badge">USER SPACE</span>
+          </div>
+          <span class="side-syscall-badge" id="dir-syscall-badge">NO SYSCALL (USER MODE)</span>
+        </div>
+
+        <!-- ONGOING PROCESS HEADLINE -->
+        <h2 class="side-process-title" id="dir-title">1. You Type "ls -la" on Keyboard</h2>
         
-        <!-- ROW 1: HEADER BAR -->
-        <div class="hud-top-bar">
-          <div class="hud-brand">
-            <span class="brand-logo">🐧</span>
-            <div class="brand-text">
-              <span class="brand-title">HOW LINUX RUNS COMMANDS</span>
-              <span class="brand-sub">Subsystem & Hardware Architecture</span>
-            </div>
-          </div>
+        <!-- ONGOING PROCESS EXPLANATION -->
+        <p class="side-process-desc" id="dir-desc">
+          When you press Enter, your terminal emulator captures raw characters and delivers them to the shell.
+        </p>
 
-          <div class="hud-center-controls">
-            <!-- CPU PRIVILEGE RING BADGE -->
-            <div class="stat-value ring-badge ring-3" id="hud-ring-val">
-              🛡️ RING 3 (USER SPACE)
-            </div>
-
-            <button class="hud-action-btn blueprint-btn" id="btn-blueprint">
-              <span class="btn-icon">🗺️</span> 2D Circuit Flowchart
-            </button>
-          </div>
-
-          <div class="hud-top-actions">
-            <button class="hud-action-btn guide-btn" id="btn-guide">
-              <span class="btn-icon">📖</span> Guide
-            </button>
-            <button class="hud-action-btn quiz-btn" id="btn-quiz">
-              <span class="btn-icon">🎯</span> Quiz
-            </button>
-            <button class="hud-action-btn" id="btn-sound-toggle">
-              <span class="btn-icon" id="sound-icon">🔊</span>
-            </button>
-          </div>
+        <!-- ANALOGY -->
+        <div class="side-analogy-card" id="dir-analogy">
+          💡 Analogy: Writing down your food order on a notepad at a restaurant.
         </div>
 
-        <!-- ROW 2: LIVE WHAT IS HAPPENING BANNER (PROMINENT & CLEAR) -->
-        <div class="stage-banner-card" id="stage-banner">
-          <div class="stage-banner-main">
-            <div class="stage-meta-row">
-              <span class="stage-pill" id="dir-step-badge">STEP 1 OF 8</span>
-              <span class="stage-layer-pill" id="dir-layer-badge">USER SPACE (TERMINAL)</span>
-              <span class="stage-syscall-pill" id="dir-syscall-badge">NO SYSCALL (USER MODE)</span>
-            </div>
-
-            <h2 class="stage-headline" id="dir-title">1. You Type "ls -la" on Keyboard</h2>
-            
-            <p class="stage-description" id="dir-desc">
-              When you press Enter, your terminal emulator captures raw characters and delivers them to the shell.
-            </p>
-
-            <div class="stage-analogy-box" id="dir-analogy">
-              💡 Analogy: Writing down your food order on a notepad at a restaurant.
-            </div>
-          </div>
-
-          <!-- INTEGRATED STEP PROGRESSION HIGHWAY -->
-          <div class="stage-stepper-wrap" id="dir-stepper">
-            <!-- Dynamic Step Pills -->
-          </div>
-
-          <!-- AUTO-ADVANCE PACE TIMER LINE -->
-          <div class="stage-timer-track">
-            <div class="stage-timer-fill" id="dir-timer-bar"></div>
-          </div>
+        <!-- STEP PROGRESSION HIGHWAY -->
+        <div class="side-stepper-title">EXECUTION PROGRESS</div>
+        <div class="side-stepper-wrap" id="dir-stepper">
+          <!-- Dynamic Step Pills -->
         </div>
 
+        <!-- PACE TIMER LINE -->
+        <div class="side-timer-wrap">
+          <div class="side-timer-bar" id="dir-timer-bar"></div>
+        </div>
       </div>
 
       <!-- BOTTOM PLAYBACK TIMELINE CONTROLLER -->
@@ -205,17 +204,17 @@ export class HudOverlay {
     const nameEl = this.container.querySelector('#plan-name');
     if (nameEl) nameEl.textContent = plan.name;
 
-    // Render step stepper pills inside Stage Banner
+    // Render step stepper pills inside Side Process Panel
     const stepper = this.container.querySelector('#dir-stepper');
     if (stepper) {
       stepper.innerHTML = plan.stages.map((stg, idx) => `
-        <button class="step-nav-pill ${idx === 0 ? 'active' : ''}" data-step="${idx}">
-          <span class="pill-dot"></span>
-          <span class="pill-text">${stg.simpleTitle || `Step ${idx+1}`}</span>
+        <button class="side-nav-pill ${idx === 0 ? 'active' : ''}" data-step="${idx}">
+          <span class="side-nav-num">${idx + 1}</span>
+          <span class="side-nav-text">${stg.simpleTitle || `Step ${idx+1}`}</span>
         </button>
       `).join('');
 
-      stepper.querySelectorAll('.step-nav-pill').forEach(btn => {
+      stepper.querySelectorAll('.side-nav-pill').forEach(btn => {
         btn.addEventListener('click', () => {
           const stepIdx = parseInt(btn.getAttribute('data-step'));
           this.runner.jumpToStage(stepIdx);
@@ -241,10 +240,10 @@ export class HudOverlay {
     const syscallEl = this.container.querySelector('#dir-syscall-badge');
     if (syscallEl) {
       syscallEl.textContent = stage.syscall ? `SYSCALL: ${stage.syscall}` : 'NO SYSCALL (USER MODE)';
-      syscallEl.className = `stage-syscall-pill ${stage.syscall ? 'has-syscall' : ''}`;
+      syscallEl.className = `side-syscall-badge ${stage.syscall ? 'has-syscall' : ''}`;
     }
 
-    // 3. Stage Banner Content
+    // 3. Side Process Panel Content
     const stepBadge = this.container.querySelector('#dir-step-badge');
     const layerBadge = this.container.querySelector('#dir-layer-badge');
     const titleEl = this.container.querySelector('#dir-title');
@@ -260,7 +259,7 @@ export class HudOverlay {
     if (stepInfoEl) stepInfoEl.textContent = `Step ${stageIndex + 1} of ${totalStages}`;
 
     // 4. Update Nav Pills
-    const pills = this.container.querySelectorAll('.step-nav-pill');
+    const pills = this.container.querySelectorAll('.side-nav-pill');
     pills.forEach((pill, idx) => {
       pill.classList.toggle('active', idx === stageIndex);
       pill.classList.toggle('passed', idx < stageIndex);
