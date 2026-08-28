@@ -14,52 +14,21 @@ export class LayerSyscall {
   }
 
   buildPlatform() {
-    const baseGeo = new THREE.BoxGeometry(22, 0.8, 22);
+    const baseGeo = new THREE.BoxGeometry(22, 0.6, 20);
     const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x140d22,
-      metalness: 0.85,
-      roughness: 0.25,
-      emissive: 0x4a154b,
-      emissiveIntensity: 0.2
+      color: 0x120a1f,
+      metalness: 0.9,
+      roughness: 0.3
     });
     const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-    baseMesh.position.y = -0.4;
+    baseMesh.position.y = -0.3;
     this.group.add(baseMesh);
 
     const edgeGeo = new THREE.EdgesGeometry(baseGeo);
-    const edgeMat = new THREE.LineBasicMaterial({ color: 0xff0077, linewidth: 2 });
+    const edgeMat = new THREE.LineBasicMaterial({ color: 0xff0077, transparent: true, opacity: 0.6 });
     const edgeLines = new THREE.LineSegments(edgeGeo, edgeMat);
-    edgeLines.position.y = -0.4;
+    edgeLines.position.y = -0.3;
     this.group.add(edgeLines);
-
-    this.createHoloLabel('🛡️ STEP 2: SECURITY GATEWAY (RING 3 ➔ 0)', new THREE.Vector3(0, 10.5, -8.0), 0xff0077, '#ff0077');
-  }
-
-  createHoloLabel(text, pos, colorHex, borderHex) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 100;
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = 'rgba(20, 6, 24, 0.9)';
-    ctx.roundRect(8, 8, 496, 84, 14);
-    ctx.fill();
-    ctx.strokeStyle = borderHex;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, 256, 50);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
-    const sprite = new THREE.Sprite(spriteMat);
-    sprite.position.copy(pos);
-    sprite.scale.set(10, 2.0, 1);
-    this.group.add(sprite);
   }
 
   buildGateModel() {
@@ -68,27 +37,25 @@ export class LayerSyscall {
     archGroup.position.set(0, 0, 0);
 
     const pillarMat = new THREE.MeshStandardMaterial({
-      color: 0x1a0f2e,
+      color: 0x160c26,
       metalness: 0.9,
-      roughness: 0.2,
-      emissive: 0xff0055,
-      emissiveIntensity: 0.15
+      roughness: 0.25
     });
 
-    const leftPillar = new THREE.Mesh(new THREE.BoxGeometry(1.6, 6.5, 1.6), pillarMat);
-    leftPillar.position.set(-5, 3.25, 0);
+    const leftPillar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 6.0, 1.4), pillarMat);
+    leftPillar.position.set(-4.5, 3.0, 0);
     archGroup.add(leftPillar);
 
-    const rightPillar = new THREE.Mesh(new THREE.BoxGeometry(1.6, 6.5, 1.6), pillarMat);
-    rightPillar.position.set(5, 3.25, 0);
+    const rightPillar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 6.0, 1.4), pillarMat);
+    rightPillar.position.set(4.5, 3.0, 0);
     archGroup.add(rightPillar);
 
-    const topBeam = new THREE.Mesh(new THREE.BoxGeometry(11.6, 1.4, 1.8), pillarMat);
-    topBeam.position.set(0, 6.5, 0);
+    const topBeam = new THREE.Mesh(new THREE.BoxGeometry(10.4, 1.2, 1.6), pillarMat);
+    topBeam.position.set(0, 6.0, 0);
     archGroup.add(topBeam);
 
     // Glowing Laser Forcefield Curtain
-    const shieldGeo = new THREE.PlaneGeometry(8.4, 5.8);
+    const shieldGeo = new THREE.PlaneGeometry(7.6, 5.4);
     const shieldMat = new THREE.MeshBasicMaterial({
       color: 0xff0055,
       transparent: true,
@@ -96,8 +63,21 @@ export class LayerSyscall {
       side: THREE.DoubleSide
     });
     this.shieldMesh = new THREE.Mesh(shieldGeo, shieldMat);
-    this.shieldMesh.position.set(0, 3.25, 0);
+    this.shieldMesh.position.set(0, 3.0, 0);
     archGroup.add(this.shieldMesh);
+
+    // Gate Under-glow
+    const gateHaloGeo = new THREE.RingGeometry(3.0, 3.5, 32);
+    const gateHaloMat = new THREE.MeshBasicMaterial({
+      color: 0xff0077,
+      transparent: true,
+      opacity: 0,
+      side: THREE.DoubleSide
+    });
+    this.gateHalo = new THREE.Mesh(gateHaloGeo, gateHaloMat);
+    this.gateHalo.rotation.x = -Math.PI / 2;
+    this.gateHalo.position.set(0, 0.05, 0);
+    archGroup.add(this.gateHalo);
 
     this.group.add(archGroup);
     this.nodes['syscall_dispatcher'] = topBeam;
@@ -111,19 +91,32 @@ export class LayerSyscall {
     });
 
     // 2. Process Cloning Chamber (fork station)
+    const forkGroup = new THREE.Group();
+    forkGroup.position.set(-4.0, 0, 4.5);
+
     const forkPod = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.6, 1.8, 3.0, 16),
+      new THREE.CylinderGeometry(1.4, 1.6, 2.6, 16),
       new THREE.MeshStandardMaterial({
         color: 0x1f0e2f,
-        emissive: 0xff9500,
-        emissiveIntensity: 0.3,
-        metalness: 0.8
+        metalness: 0.85,
+        roughness: 0.25
       })
     );
-    forkPod.position.set(-4.5, 1.5, 5.0);
-    this.group.add(forkPod);
+    forkPod.position.y = 1.3;
+    forkGroup.add(forkPod);
 
-    this.nodes['fork'] = forkPod;
+    const forkHalo = new THREE.Mesh(
+      new THREE.RingGeometry(1.6, 2.0, 32),
+      new THREE.MeshBasicMaterial({ color: 0xff9500, transparent: true, opacity: 0, side: THREE.DoubleSide })
+    );
+    forkHalo.rotation.x = -Math.PI / 2;
+    forkHalo.position.y = 0.05;
+    forkGroup.add(forkHalo);
+    this.forkHalo = forkHalo;
+
+    this.group.add(forkGroup);
+    this.nodes['fork'] = forkGroup;
+
     this.sceneManager.registerInteractiveObject(forkPod, {
       id: 'fork',
       title: '👥 fork() Process Cloner',
@@ -133,19 +126,31 @@ export class LayerSyscall {
     });
 
     // 3. Execve Transformation Chamber
+    const execGroup = new THREE.Group();
+    execGroup.position.set(4.0, 0, 4.5);
+
     const execPod = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.6, 1.8, 3.0, 16),
+      new THREE.CylinderGeometry(1.4, 1.6, 2.6, 16),
       new THREE.MeshStandardMaterial({
         color: 0x1f0e2f,
-        emissive: 0x30d158,
-        emissiveIntensity: 0.3,
-        metalness: 0.8
+        metalness: 0.85,
+        roughness: 0.25
       })
     );
-    execPod.position.set(4.5, 1.5, 5.0);
-    this.group.add(execPod);
+    execPod.position.y = 1.3;
+    execGroup.add(execPod);
 
-    this.nodes['execve'] = execPod;
+    const execHalo = new THREE.Mesh(
+      new THREE.RingGeometry(1.6, 2.0, 32),
+      new THREE.MeshBasicMaterial({ color: 0x30d158, transparent: true, opacity: 0, side: THREE.DoubleSide })
+    );
+    execHalo.rotation.x = -Math.PI / 2;
+    execHalo.position.y = 0.05;
+    execGroup.add(execHalo);
+    this.execHalo = execHalo;
+
+    this.group.add(execGroup);
+    this.nodes['execve'] = execGroup;
     this.nodes['fd_table'] = topBeam;
 
     this.sceneManager.registerInteractiveObject(execPod, {
@@ -158,20 +163,15 @@ export class LayerSyscall {
   }
 
   highlightNode(nodeId, active = true, colorHex = 0xff0055) {
-    const node = this.nodes[nodeId];
-    if (!node) return;
-
-    if (active) {
-      node.scale.set(1.1, 1.1, 1.1);
-      if (node.material && node.material.emissive) {
-        node.material.emissive.setHex(colorHex);
-        node.material.emissiveIntensity = 0.95;
-      }
-    } else {
-      node.scale.set(1, 1, 1);
-      if (node.material && node.material.emissive) {
-        node.material.emissiveIntensity = 0.15;
-      }
+    if (nodeId === 'syscall_dispatcher' && this.gateHalo) {
+      this.gateHalo.material.color.setHex(colorHex);
+      this.gateHalo.material.opacity = active ? 0.9 : 0;
+    } else if (nodeId === 'fork' && this.forkHalo) {
+      this.forkHalo.material.color.setHex(colorHex);
+      this.forkHalo.material.opacity = active ? 0.9 : 0;
+    } else if (nodeId === 'execve' && this.execHalo) {
+      this.execHalo.material.color.setHex(colorHex);
+      this.execHalo.material.opacity = active ? 0.9 : 0;
     }
   }
 
