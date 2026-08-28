@@ -318,6 +318,12 @@ export class PracticePage {
 
     const isCompleted = !!this.completedMissions[cmd.id];
 
+    // Extract flags and arguments for the flags breakdown
+    const parts = cmd.command.split(/\s+/);
+    const cmdBinary = parts[0];
+    const cmdFlags = parts.slice(1).filter(p => p.startsWith('-'));
+    const cmdArgs = parts.slice(1).filter(p => !p.startsWith('-'));
+
     cardEl.innerHTML = `
       <div class="p-card-top">
         <div class="p-card-badge-group">
@@ -328,31 +334,92 @@ export class PracticePage {
         <h2 class="p-card-title">${cmd.title}</h2>
       </div>
 
-      <p class="p-card-mission-desc">🎯 <strong>Mission Goal:</strong> ${cmd.mission}</p>
-
-      <div class="p-card-details-grid">
-        <div class="p-card-hint-box">
-          <span class="p-detail-label">💡 Hint & Command Syntax:</span>
-          <p>${cmd.hint}</p>
-          <code class="p-target-code">${cmd.command}</code>
+      <!-- STEP-BY-STEP INSTRUCTIONS -->
+      <div class="p-instructions-box">
+        <div class="p-instructions-header">
+          <span class="p-instructions-badge">📝 INSTRUCTIONS & WORKFLOW</span>
+          <span class="p-instructions-scenario">Scenario: Real-world System Administration</span>
         </div>
-        <div class="p-card-kernel-box">
-          <span class="p-detail-label">🧠 Kernel / Syscall Details:</span>
-          <p>${cmd.whyHappeningHere}</p>
-          ${cmd.syscall ? `<span class="p-syscall-chip">⚙️ Syscall: <code>${cmd.syscall}</code></span>` : ''}
+        <div class="p-steps-list">
+          <div class="p-step-item">
+            <span class="p-step-bullet">1</span>
+            <div class="p-step-body">
+              <strong>Objective:</strong> ${cmd.mission}
+            </div>
+          </div>
+          <div class="p-step-item">
+            <span class="p-step-bullet">2</span>
+            <div class="p-step-body">
+              <strong>How to execute:</strong> Type the command into the practice terminal below or click <em>Load into Terminal</em>.
+            </div>
+          </div>
+          <div class="p-step-item">
+            <span class="p-step-bullet">3</span>
+            <div class="p-step-body">
+              <strong>Verification:</strong> Observe the output stream, verify the exit code, and earn <strong>+${cmd.xp} XP</strong>!
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="p-card-actions-row">
-        <button class="p-action-btn p-btn-fill" id="p-btn-autofill" data-cmd="${cmd.command}">
-          ⌨️ Load Command Into Terminal
-        </button>
-        <button class="p-action-btn p-btn-sim3d" id="p-btn-sim3d">
-          🌐 View in 3D Subsystem
-        </button>
-        <button class="p-action-btn p-btn-toggle-done ${isCompleted ? 'done' : ''}" id="p-btn-toggle-done">
-          ${isCompleted ? '✓ Completed' : 'Mark Done'}
-        </button>
+      <!-- PROGRESSIVE 3-TIER HINTS ACCORDION -->
+      <div class="p-hints-accordion-group">
+        <details class="p-hint-accordion">
+          <summary class="p-hint-summary">
+            <span>💡 Hint 1: Concept & Primary Command</span>
+            <span class="p-hint-toggle-icon">▼</span>
+          </summary>
+          <div class="p-hint-content">
+            <p>Use the <code>${cmdBinary}</code> utility in Linux. It communicates with the kernel via <code>${cmd.syscall || 'POSIX syscalls'}</code>.</p>
+          </div>
+        </details>
+
+        <details class="p-hint-accordion">
+          <summary class="p-hint-summary">
+            <span>⚙️ Hint 2: Flags & Parameter Breakdown</span>
+            <span class="p-hint-toggle-icon">▼</span>
+          </summary>
+          <div class="p-hint-content">
+            <p>${cmd.hint}</p>
+            <div class="p-flags-chips">
+              <span class="p-flag-chip"><strong>Binary:</strong> <code>${cmdBinary}</code></span>
+              ${cmdFlags.length > 0 ? `<span class="p-flag-chip"><strong>Flags:</strong> <code>${cmdFlags.join(' ')}</code></span>` : ''}
+              ${cmdArgs.length > 0 ? `<span class="p-flag-chip"><strong>Args:</strong> <code>${cmdArgs.join(' ')}</code></span>` : ''}
+            </div>
+          </div>
+        </details>
+
+        <details class="p-hint-accordion">
+          <summary class="p-hint-summary">
+            <span>🔑 Hint 3: Full Solution & Target Syntax</span>
+            <span class="p-hint-toggle-icon">▼</span>
+          </summary>
+          <div class="p-hint-content solution">
+            <p>Type this exact command into the terminal:</p>
+            <div class="p-solution-row">
+              <code class="p-target-code">${cmd.command}</code>
+              <button class="p-mini-copy-btn" id="p-copy-solution" title="Copy Command">📋 Copy</button>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <!-- KERNEL EXPLANATION & ACTION BUTTONS -->
+      <div class="p-card-footer-row">
+        <div class="p-kernel-rationale">
+          🧠 <strong>Under the Hood:</strong> ${cmd.whyHappeningHere}
+        </div>
+        <div class="p-card-actions-row">
+          <button class="p-action-btn p-btn-fill" id="p-btn-autofill" data-cmd="${cmd.command}">
+            ⌨️ Load into Terminal
+          </button>
+          <button class="p-action-btn p-btn-sim3d" id="p-btn-sim3d">
+            🌐 3D Motherboard
+          </button>
+          <button class="p-action-btn p-btn-toggle-done ${isCompleted ? 'done' : ''}" id="p-btn-toggle-done">
+            ${isCompleted ? '✓ Completed' : 'Mark Done'}
+          </button>
+        </div>
       </div>
     `;
 
@@ -362,6 +429,15 @@ export class PracticePage {
       input.value = cmd.command;
       input.focus();
     });
+
+    const copyBtn = cardEl.querySelector('#p-copy-solution');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(cmd.command);
+        copyBtn.textContent = '✓ Copied!';
+        setTimeout(() => copyBtn.textContent = '📋 Copy', 1500);
+      });
+    }
 
     cardEl.querySelector('#p-btn-sim3d').addEventListener('click', () => {
       if (this.onSwitchTo3D) {
