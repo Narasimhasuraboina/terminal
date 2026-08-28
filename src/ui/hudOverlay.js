@@ -16,77 +16,82 @@ export class HudOverlay {
 
   render() {
     this.container.innerHTML = `
-      <!-- TOP SLIM STATUS BAR -->
-      <div class="hud-top-bar">
-        <div class="hud-brand">
-          <div class="brand-logo">🐧</div>
-          <div class="brand-text">
-            <span class="brand-title">HOW LINUX RUNS COMMANDS</span>
-            <span class="brand-sub">Computer Architecture & Kernel Flow</span>
-          </div>
-        </div>
-
-        <div class="hud-center-actions">
-          <button class="hud-action-btn blueprint-btn" id="btn-blueprint">
-            <span class="btn-icon">🗺️</span> 2D Circuit Flowchart
-          </button>
-
-          <!-- CPU PRIVILEGE RING BADGE -->
-          <div class="stat-value ring-badge ring-3" id="hud-ring-val">
-            🛡️ RING 3 (USER SPACE)
-          </div>
-        </div>
-
-        <div class="hud-top-actions">
-          <button class="hud-action-btn guide-btn" id="btn-guide">
-            <span class="btn-icon">📖</span> Guide
-          </button>
-          <button class="hud-action-btn quiz-btn" id="btn-quiz">
-            <span class="btn-icon">🎯</span> Quiz
-          </button>
-          <button class="hud-action-btn" id="btn-sound-toggle">
-            <span class="btn-icon" id="sound-icon">🔊</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- UNIFIED LIVE STAGE DIRECTOR CARD (TOP CENTER) -->
-      <div class="stage-director-card" id="stage-director">
-        <div class="director-header">
-          <div class="director-badge-group">
-            <span class="director-step-badge" id="dir-step-badge">STEP 1 OF 8</span>
-            <span class="director-layer-badge" id="dir-layer-badge">USER SPACE</span>
-          </div>
-          <span class="director-syscall-badge" id="dir-syscall-badge">NO SYSCALL (USER MODE)</span>
-        </div>
-
-        <h3 class="director-title" id="dir-title">1. You Type "ls -la" on Keyboard</h3>
+      <!-- TOP UNIFIED COMMAND & STAGE DIRECTOR BANNER -->
+      <div class="hud-top-wrapper">
         
-        <p class="director-desc" id="dir-desc">
-          When you press Enter, your terminal emulator captures the raw characters and delivers them to the shell.
-        </p>
+        <!-- ROW 1: HEADER BAR -->
+        <div class="hud-top-bar">
+          <div class="hud-brand">
+            <span class="brand-logo">🐧</span>
+            <div class="brand-text">
+              <span class="brand-title">HOW LINUX RUNS COMMANDS</span>
+              <span class="brand-sub">Subsystem & Hardware Architecture</span>
+            </div>
+          </div>
 
-        <div class="director-analogy" id="dir-analogy">
-          💡 Analogy: Writing down your food order on a notepad at a restaurant.
+          <div class="hud-center-controls">
+            <!-- CPU PRIVILEGE RING BADGE -->
+            <div class="stat-value ring-badge ring-3" id="hud-ring-val">
+              🛡️ RING 3 (USER SPACE)
+            </div>
+
+            <button class="hud-action-btn blueprint-btn" id="btn-blueprint">
+              <span class="btn-icon">🗺️</span> 2D Circuit Flowchart
+            </button>
+          </div>
+
+          <div class="hud-top-actions">
+            <button class="hud-action-btn guide-btn" id="btn-guide">
+              <span class="btn-icon">📖</span> Guide
+            </button>
+            <button class="hud-action-btn quiz-btn" id="btn-quiz">
+              <span class="btn-icon">🎯</span> Quiz
+            </button>
+            <button class="hud-action-btn" id="btn-sound-toggle">
+              <span class="btn-icon" id="sound-icon">🔊</span>
+            </button>
+          </div>
         </div>
 
-        <!-- INTEGRATED STEP PROGRESS DOTS -->
-        <div class="director-stepper" id="dir-stepper">
-          <!-- Dynamic Step Dots -->
+        <!-- ROW 2: LIVE WHAT IS HAPPENING BANNER (PROMINENT & CLEAR) -->
+        <div class="stage-banner-card" id="stage-banner">
+          <div class="stage-banner-main">
+            <div class="stage-meta-row">
+              <span class="stage-pill" id="dir-step-badge">STEP 1 OF 8</span>
+              <span class="stage-layer-pill" id="dir-layer-badge">USER SPACE (TERMINAL)</span>
+              <span class="stage-syscall-pill" id="dir-syscall-badge">NO SYSCALL (USER MODE)</span>
+            </div>
+
+            <h2 class="stage-headline" id="dir-title">1. You Type "ls -la" on Keyboard</h2>
+            
+            <p class="stage-description" id="dir-desc">
+              When you press Enter, your terminal emulator captures raw characters and delivers them to the shell.
+            </p>
+
+            <div class="stage-analogy-box" id="dir-analogy">
+              💡 Analogy: Writing down your food order on a notepad at a restaurant.
+            </div>
+          </div>
+
+          <!-- INTEGRATED STEP PROGRESSION HIGHWAY -->
+          <div class="stage-stepper-wrap" id="dir-stepper">
+            <!-- Dynamic Step Pills -->
+          </div>
+
+          <!-- AUTO-ADVANCE PACE TIMER LINE -->
+          <div class="stage-timer-track">
+            <div class="stage-timer-fill" id="dir-timer-bar"></div>
+          </div>
         </div>
 
-        <!-- AUTO-ADVANCE PACE TIMER BAR -->
-        <div class="director-timer-wrap">
-          <div class="director-timer-bar" id="dir-timer-bar"></div>
-        </div>
       </div>
 
-      <!-- BOTTOM TIMELINE PLAYBACK CONTROLLER -->
+      <!-- BOTTOM PLAYBACK TIMELINE CONTROLLER -->
       <div class="hud-bottom-bar">
         <div class="timeline-controls">
-          <button class="ctrl-btn" id="btn-prev" title="Previous Stage (Left Arrow)">⏮</button>
-          <button class="ctrl-btn ctrl-play" id="btn-play" title="Play / Pause (Spacebar)">▶</button>
-          <button class="ctrl-btn" id="btn-next" title="Next Stage (Right Arrow)">⏭</button>
+          <button class="ctrl-btn" id="btn-prev" title="Previous Stage">⏮</button>
+          <button class="ctrl-btn ctrl-play" id="btn-play" title="Play / Pause">▶</button>
+          <button class="ctrl-btn" id="btn-next" title="Next Stage">⏭</button>
           <button class="ctrl-btn" id="btn-reset" title="Reset Simulation">↺</button>
         </div>
 
@@ -170,7 +175,7 @@ export class HudOverlay {
       if (this.onOpenGuide) this.onOpenGuide();
     });
 
-    // Speed buttons
+    // Speed selector
     this.container.querySelectorAll('.speed-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         this.container.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
@@ -180,7 +185,7 @@ export class HudOverlay {
       });
     });
 
-    // Camera preset buttons
+    // Camera presets
     this.container.querySelectorAll('.cam-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const camKey = btn.getAttribute('data-cam');
@@ -200,17 +205,17 @@ export class HudOverlay {
     const nameEl = this.container.querySelector('#plan-name');
     if (nameEl) nameEl.textContent = plan.name;
 
-    // Render step stepper dots inside Stage Director Card
+    // Render step stepper pills inside Stage Banner
     const stepper = this.container.querySelector('#dir-stepper');
     if (stepper) {
       stepper.innerHTML = plan.stages.map((stg, idx) => `
-        <button class="stepper-dot-btn ${idx === 0 ? 'active' : ''}" data-step="${idx}">
-          <span class="stepper-dot"></span>
-          <span class="stepper-label">${stg.simpleTitle || `Step ${idx+1}`}</span>
+        <button class="step-nav-pill ${idx === 0 ? 'active' : ''}" data-step="${idx}">
+          <span class="pill-dot"></span>
+          <span class="pill-text">${stg.simpleTitle || `Step ${idx+1}`}</span>
         </button>
-      `).join('<span class="stepper-line"></span>');
+      `).join('');
 
-      stepper.querySelectorAll('.stepper-dot-btn').forEach(btn => {
+      stepper.querySelectorAll('.step-nav-pill').forEach(btn => {
         btn.addEventListener('click', () => {
           const stepIdx = parseInt(btn.getAttribute('data-step'));
           this.runner.jumpToStage(stepIdx);
@@ -220,15 +225,15 @@ export class HudOverlay {
   }
 
   updateStage(stage, stageIndex, totalStages) {
-    // 1. CPU Privilege Ring Badge
+    // 1. Privilege Ring Badge
     const ringEl = this.container.querySelector('#hud-ring-val');
     if (ringEl) {
       if (stage.ring === 0) {
         ringEl.className = 'stat-value ring-badge ring-0';
-        ringEl.textContent = '⚡ RING 0 (KERNEL SPACE)';
+        ringEl.textContent = '⚡ RING 0 (KERNEL MODE)';
       } else {
         ringEl.className = 'stat-value ring-badge ring-3';
-        ringEl.textContent = '🛡️ RING 3 (USER SPACE)';
+        ringEl.textContent = '🛡️ RING 3 (USER MODE)';
       }
     }
 
@@ -236,10 +241,10 @@ export class HudOverlay {
     const syscallEl = this.container.querySelector('#dir-syscall-badge');
     if (syscallEl) {
       syscallEl.textContent = stage.syscall ? `SYSCALL: ${stage.syscall}` : 'NO SYSCALL (USER MODE)';
-      syscallEl.className = `director-syscall-badge ${stage.syscall ? 'has-syscall' : ''}`;
+      syscallEl.className = `stage-syscall-pill ${stage.syscall ? 'has-syscall' : ''}`;
     }
 
-    // 3. Stage Director Card Content
+    // 3. Stage Banner Content
     const stepBadge = this.container.querySelector('#dir-step-badge');
     const layerBadge = this.container.querySelector('#dir-layer-badge');
     const titleEl = this.container.querySelector('#dir-title');
@@ -254,20 +259,20 @@ export class HudOverlay {
     if (analogyEl) analogyEl.textContent = stage.analogy || '💡 Processing operating system request.';
     if (stepInfoEl) stepInfoEl.textContent = `Step ${stageIndex + 1} of ${totalStages}`;
 
-    // 4. Update Stepper Dots
-    const dotBtns = this.container.querySelectorAll('.stepper-dot-btn');
-    dotBtns.forEach((btn, idx) => {
-      btn.classList.toggle('active', idx === stageIndex);
-      btn.classList.toggle('passed', idx < stageIndex);
+    // 4. Update Nav Pills
+    const pills = this.container.querySelectorAll('.step-nav-pill');
+    pills.forEach((pill, idx) => {
+      pill.classList.toggle('active', idx === stageIndex);
+      pill.classList.toggle('passed', idx < stageIndex);
     });
 
-    // 5. Reset & Trigger Timer Bar Animation
+    // 5. Reset & Animate Timer Bar
     const timerBar = this.container.querySelector('#dir-timer-bar');
     if (timerBar) {
       timerBar.style.transition = 'none';
       timerBar.style.width = '0%';
       setTimeout(() => {
-        const stepDuration = Math.max(1000, (this.runner.currentPlan?.stages[stageIndex + 1]?.timeOffset || 3000) - stage.timeOffset) / this.runner.speedMultiplier;
+        const stepDuration = Math.max(1000, (this.runner.currentPlan?.stages[stageIndex + 1]?.timeOffset || 3200) - stage.timeOffset) / this.runner.speedMultiplier;
         timerBar.style.transition = `width ${stepDuration}ms linear`;
         timerBar.style.width = '100%';
       }, 50);
