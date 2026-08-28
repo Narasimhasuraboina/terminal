@@ -51,7 +51,7 @@ export class HudOverlay {
             <span class="btn-icon">⚡</span> Practice Lab (New Page)
           </button>
           <button class="hud-action-btn missions-btn" id="btn-missions">
-            <span class="btn-icon">🎯</span> <span id="missions-btn-text">100 Missions (0/100)</span>
+            <span class="btn-icon">🎯</span> <span id="missions-btn-text">600 Missions (0/600)</span>
           </button>
           <button class="hud-action-btn guide-btn" id="btn-guide">
             <span class="btn-icon">📖</span> Guide

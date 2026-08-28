@@ -1,6 +1,7 @@
-// Comprehensive Master Dataset: 100 Essential Daily Linux Commands for Practice-Based Learning
+// Comprehensive Master Dataset: 600 Essential Linux, DevOps & Kernel Practice Commands
+import { LINUX_500_ADDITIONAL_COMMANDS } from './linux500Commands.js';
 
-export const LINUX_100_COMMANDS = [
+export const BASE_100_COMMANDS = [
   // =========================================================================
   // CATEGORY 1: FILE & DIRECTORY MANAGEMENT (15 Commands)
   // =========================================================================
@@ -1430,13 +1431,21 @@ export const LINUX_100_COMMANDS = [
   }
 ];
 
+// Unified Master List of 600 Practice Commands
+export const LINUX_100_COMMANDS = [
+  ...BASE_100_COMMANDS,
+  ...LINUX_500_ADDITIONAL_COMMANDS
+];
+
 export const CATEGORIES = [
-  { id: 'all', name: '🌟 All Commands (100)', icon: '🌟' },
-  { id: 'files', name: '📂 Files & Directories (15)', icon: '📂' },
-  { id: 'text', name: '🔍 Text & Search (15)', icon: '🔍' },
-  { id: 'system', name: '🧠 System & CPU (15)', icon: '🧠' },
-  { id: 'process', name: '⚡ Processes & Signals (15)', icon: '⚡' },
-  { id: 'security', name: '🛡️ Permissions & Security (15)', icon: '🛡️' },
-  { id: 'network', name: '🌐 Networking & Transfer (15)', icon: '🌐' },
-  { id: 'storage', name: '📦 Storage & Services (10)', icon: '📦' }
+  { id: 'all', name: `🌟 All Commands (${LINUX_100_COMMANDS.length})`, icon: '🌟' },
+  { id: 'files', name: '📂 Files & Directories', icon: '📂' },
+  { id: 'text', name: '🔍 Text & Search', icon: '🔍' },
+  { id: 'system', name: '🧠 System & CPU', icon: '🧠' },
+  { id: 'process', name: '⚡ Processes & Signals', icon: '⚡' },
+  { id: 'security', name: '🛡️ Permissions & Security', icon: '🛡️' },
+  { id: 'network', name: '🌐 Networking & Transfer', icon: '🌐' },
+  { id: 'container', name: '🐳 Containers & K8s', icon: '🐳' },
+  { id: 'storage', name: '📦 Storage & Services', icon: '📦' },
+  { id: 'devops', name: '🛠️ DevOps, Git & Scripting', icon: '🛠️' }
 ];
