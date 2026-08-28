@@ -1,5 +1,5 @@
 export class HudOverlay {
-  constructor({ domElement, runner, cameraManager, sound, onOpenInspector, onOpenQuiz, onOpenGuide, onToggleBlueprint, onOpenMissions }) {
+  constructor({ domElement, runner, cameraManager, sound, onOpenInspector, onOpenQuiz, onOpenGuide, onToggleBlueprint, onOpenMissions, onOpenPractice }) {
     this.container = domElement;
     this.runner = runner;
     this.cameraManager = cameraManager;
@@ -9,6 +9,7 @@ export class HudOverlay {
     this.onOpenGuide = onOpenGuide;
     this.onToggleBlueprint = onToggleBlueprint;
     this.onOpenMissions = onOpenMissions;
+    this.onOpenPractice = onOpenPractice;
     this.mode = 'simple';
 
     this.render();
@@ -41,11 +42,14 @@ export class HudOverlay {
           </div>
 
           <button class="hud-action-btn blueprint-btn" id="btn-blueprint">
-            <span class="btn-icon">🗺️</span> 2D Circuit Flowchart
+            <span class="btn-icon">🗺️</span> 2D Flowchart
           </button>
         </div>
 
         <div class="hud-top-actions">
+          <button class="hud-action-btn practice-nav-btn" id="btn-practice-page">
+            <span class="btn-icon">⚡</span> Practice Lab (New Page)
+          </button>
           <button class="hud-action-btn missions-btn" id="btn-missions">
             <span class="btn-icon">🎯</span> <span id="missions-btn-text">100 Missions (0/100)</span>
           </button>
@@ -53,7 +57,7 @@ export class HudOverlay {
             <span class="btn-icon">📖</span> Guide
           </button>
           <button class="hud-action-btn quiz-btn" id="btn-quiz">
-            <span class="btn-icon">⚡</span> Quiz
+            <span class="btn-icon">❓</span> Quiz
           </button>
           <button class="hud-action-btn" id="btn-sound-toggle">
             <span class="btn-icon" id="sound-icon">🔊</span>
@@ -204,6 +208,13 @@ export class HudOverlay {
       soundBtn.querySelector('#sound-icon').textContent = isMuted ? '🔇' : '🔊';
       soundBtn.classList.toggle('muted', isMuted);
     });
+
+    const practiceBtn = this.container.querySelector('#btn-practice-page');
+    if (practiceBtn) {
+      practiceBtn.addEventListener('click', () => {
+        if (this.onOpenPractice) this.onOpenPractice();
+      });
+    }
 
     const missionsBtn = this.container.querySelector('#btn-missions');
     if (missionsBtn) {

@@ -18,6 +18,7 @@ import { GuideModal } from './ui/guideModal.js';
 import { BlueprintOverlay } from './ui/blueprintOverlay.js';
 import { QuizMode } from './ui/quizMode.js';
 import { MissionsModal } from './ui/missionsModal.js';
+import { PracticePage } from './ui/practicePage.js';
 import { LINUX_100_COMMANDS } from './data/linux100Commands.js';
 import { sound } from './audio/soundFX.js';
 
@@ -91,11 +92,19 @@ class App {
     const guideContainer = document.getElementById('guide-container');
     const blueprintContainer = document.getElementById('blueprint-container');
     const quizContainer = document.getElementById('quiz-container');
+    const practiceContainer = document.getElementById('practice-container');
 
     this.inspectorModal = new InspectorModal(modalContainer);
     this.guideModal = new GuideModal(guideContainer);
     this.blueprintOverlay = new BlueprintOverlay(blueprintContainer, this.timelineRunner);
     this.quizMode = new QuizMode(quizContainer);
+
+    this.practicePage = new PracticePage({
+      container: practiceContainer,
+      onSwitchTo3D: () => this.switchTo3DView(),
+      commandEngine: this.commandEngine,
+      timelineRunner: this.timelineRunner
+    });
 
     this.terminalUI = new TerminalUI(terminalContainer, (cmd) => {
       this.executeCommand(cmd);
@@ -110,7 +119,8 @@ class App {
       onOpenGuide: () => this.guideModal.show(),
       onToggleBlueprint: () => this.blueprintOverlay.toggle(),
       onOpenQuiz: () => this.quizMode.show(),
-      onOpenMissions: () => this.missionsModal.toggle()
+      onOpenMissions: () => this.missionsModal.toggle(),
+      onOpenPractice: () => this.switchToPracticePage()
     });
 
     this.missionsModal = new MissionsModal({
@@ -129,6 +139,21 @@ class App {
     this.timelineRunner.onPlayStateChange = (isPlaying) => {
       this.hudOverlay.updatePlayState(isPlaying);
     };
+  }
+
+  switchToPracticePage() {
+    document.getElementById('app-viewport').classList.add('hidden');
+    document.getElementById('hud-container').classList.add('hidden');
+    document.getElementById('terminal-dock').classList.add('hidden');
+    document.getElementById('blueprint-container').classList.add('hidden');
+    this.practicePage.show();
+  }
+
+  switchTo3DView() {
+    this.practicePage.hide();
+    document.getElementById('app-viewport').classList.remove('hidden');
+    document.getElementById('hud-container').classList.remove('hidden');
+    document.getElementById('terminal-dock').classList.remove('hidden');
   }
 
   executeCommand(cmdText, result = null) {
