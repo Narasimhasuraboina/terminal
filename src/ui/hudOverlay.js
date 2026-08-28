@@ -1,5 +1,5 @@
 export class HudOverlay {
-  constructor({ domElement, runner, cameraManager, sound, onOpenInspector, onOpenQuiz, onOpenGuide, onToggleBlueprint }) {
+  constructor({ domElement, runner, cameraManager, sound, onOpenInspector, onOpenQuiz, onOpenGuide, onToggleBlueprint, onOpenMissions }) {
     this.container = domElement;
     this.runner = runner;
     this.cameraManager = cameraManager;
@@ -8,6 +8,7 @@ export class HudOverlay {
     this.onOpenQuiz = onOpenQuiz;
     this.onOpenGuide = onOpenGuide;
     this.onToggleBlueprint = onToggleBlueprint;
+    this.onOpenMissions = onOpenMissions;
     this.mode = 'simple';
 
     this.render();
@@ -45,11 +46,14 @@ export class HudOverlay {
         </div>
 
         <div class="hud-top-actions">
+          <button class="hud-action-btn missions-btn" id="btn-missions">
+            <span class="btn-icon">🎯</span> <span id="missions-btn-text">100 Missions (0/100)</span>
+          </button>
           <button class="hud-action-btn guide-btn" id="btn-guide">
             <span class="btn-icon">📖</span> Guide
           </button>
           <button class="hud-action-btn quiz-btn" id="btn-quiz">
-            <span class="btn-icon">🎯</span> Quiz
+            <span class="btn-icon">⚡</span> Quiz
           </button>
           <button class="hud-action-btn" id="btn-sound-toggle">
             <span class="btn-icon" id="sound-icon">🔊</span>
@@ -201,6 +205,13 @@ export class HudOverlay {
       soundBtn.classList.toggle('muted', isMuted);
     });
 
+    const missionsBtn = this.container.querySelector('#btn-missions');
+    if (missionsBtn) {
+      missionsBtn.addEventListener('click', () => {
+        if (this.onOpenMissions) this.onOpenMissions();
+      });
+    }
+
     quizBtn.addEventListener('click', () => {
       if (this.onOpenQuiz) this.onOpenQuiz();
     });
@@ -226,6 +237,13 @@ export class HudOverlay {
         this.cameraManager.transitionTo(camKey);
       });
     });
+  }
+
+  updateMissionsBadge(completed, total) {
+    const textEl = this.container.querySelector('#missions-btn-text');
+    if (textEl) {
+      textEl.textContent = `100 Missions (${completed}/${total})`;
+    }
   }
 
   updatePlayState(isPlaying) {

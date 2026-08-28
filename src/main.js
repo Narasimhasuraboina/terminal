@@ -17,6 +17,7 @@ import { InspectorModal } from './ui/inspectorModal.js';
 import { GuideModal } from './ui/guideModal.js';
 import { BlueprintOverlay } from './ui/blueprintOverlay.js';
 import { QuizMode } from './ui/quizMode.js';
+import { MissionsModal } from './ui/missionsModal.js';
 import { sound } from './audio/soundFX.js';
 
 class App {
@@ -107,7 +108,15 @@ class App {
       onOpenInspector: (stage) => this.inspectorModal.show(stage),
       onOpenGuide: () => this.guideModal.show(),
       onToggleBlueprint: () => this.blueprintOverlay.toggle(),
-      onOpenQuiz: () => this.quizMode.show()
+      onOpenQuiz: () => this.quizMode.show(),
+      onOpenMissions: () => this.missionsModal.toggle()
+    });
+
+    this.missionsModal = new MissionsModal({
+      timelineRunner: this.timelineRunner,
+      commandEngine: this.commandEngine,
+      hudOverlay: this.hudOverlay,
+      terminalUI: this.terminalUI
     });
 
     // Wire Runner Callbacks to UI

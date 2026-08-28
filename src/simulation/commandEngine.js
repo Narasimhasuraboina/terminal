@@ -1,4 +1,5 @@
 import { COMMAND_PRESETS } from './commandPresets.js';
+import { LINUX_100_COMMANDS } from '../data/linux100Commands.js';
 
 export class CommandEngine {
   constructor() {
@@ -42,7 +43,17 @@ export class CommandEngine {
       return this.buildBuiltinPlan(parsed.name, parsed.raw, parsed.args);
     }
 
-    // 3. Common commands patterns
+    // 3. Match in 100 Essential Commands Database
+    const matched100 = LINUX_100_COMMANDS.find(c => 
+      c.command.toLowerCase() === parsed.raw.toLowerCase() ||
+      c.name.toLowerCase() === parsed.raw.toLowerCase() ||
+      c.name.split(/\s+/)[0].toLowerCase() === parsed.name
+    );
+    if (matched100) {
+      return this.build100CommandPlan(matched100, parsed.raw);
+    }
+
+    // 4. Common commands patterns
     if (parsed.name === 'rm' || parsed.name === 'unlink') {
       return this.buildRemoveFilePlan(parsed.raw, parsed.args);
     }
@@ -51,13 +62,138 @@ export class CommandEngine {
       return this.buildNetworkPingPlan(parsed.raw, parsed.args);
     }
 
-    // 4. Invalid / not found command simulation
+    // 5. Invalid / not found command simulation
     if (parsed.name === 'test' || parsed.name === 'foobar' || parsed.name === 'asdf' || parsed.name === 'invalid') {
       return this.buildInvalidCommandPlan(parsed.raw, parsed.name);
     }
 
-    // 5. Generic Executable Fallback Plan
+    // 6. Generic Executable Fallback Plan
     return this.buildGenericCommandPlan(parsed.raw, parsed.name, parsed.args);
+  }
+
+  build100CommandPlan(cmdData, rawInput) {
+    const nodeTarget = cmdData.category === 'storage' || cmdData.category === 'files' 
+      ? 'vfs_tree' 
+      : (cmdData.category === 'process' ? 'mmu_memory' : 'cpu_core');
+
+    const cameraTarget = cmdData.category === 'storage' || cmdData.category === 'files' 
+      ? 'vfs' 
+      : (cmdData.category === 'network' ? 'syscall' : 'kernel');
+
+    return {
+      name: rawInput || cmdData.command,
+      title: cmdData.title,
+      summaryText: cmdData.mission,
+      stages: [
+        {
+          id: 'stage_1_input',
+          stepNum: 1,
+          timeOffset: 0,
+          name: `1. Typed "${rawInput || cmdData.command}" on Terminal`,
+          simpleTitle: '1. Keystrokes',
+          layer: 'User Space (Ring 3)',
+          activeNode: 'terminal',
+          route: null,
+          sound: 'key',
+          cameraTarget: 'userspace',
+          ring: 3,
+          syscall: null,
+          registers: { RIP: '0x7fff4010', RAX: '0x00000000' },
+          simpleExplanation: `Your keyboard strokes are buffered in the terminal emulator and passed to the shell.`,
+          explanation: `Keystrokes "${rawInput || cmdData.command}" are written to /dev/ptmx.`,
+          whyHappeningHere: 'User Space (Ring 3) isolates input handling to prevent system memory corruption.',
+          analogy: `💡 Analogy: Typing instructions into a secure workstation.`,
+          codeSnippet: `write(ptmx_fd, "${rawInput || cmdData.command}\\n", ${rawInput.length + 1});`,
+          terminalOutput: `user@linux:~$ ${rawInput || cmdData.command}`
+        },
+        {
+          id: 'stage_2_parse',
+          stepNum: 2,
+          timeOffset: 3200,
+          name: `2. Shell Parses & Resolves $PATH`,
+          simpleTitle: '2. Parse $PATH',
+          layer: 'User Space (Bash)',
+          activeNode: 'lexer',
+          route: { from: 'terminal', to: 'lexer', color: 0x00f3ff },
+          sound: 'key',
+          cameraTarget: 'userspace',
+          ring: 3,
+          syscall: 'faccessat2()',
+          registers: { RIP: '0x5555556a', RAX: '0x00000002' },
+          simpleExplanation: `The shell parses flags and locates the compiled binary on disk.`,
+          explanation: `Shell tokenizes "${rawInput || cmdData.command}" and verifies executable binary permissions in $PATH.`,
+          whyHappeningHere: 'The shell prepares process arguments in user memory before invoking kernel syscalls.',
+          analogy: `💡 Analogy: Looking up the correct tool in your workshop before starting.`,
+          codeSnippet: `// Shell finds binary in $PATH\nconst binary = "/usr/bin/${cmdData.name.split(' ')[0]}";`,
+          terminalOutput: null
+        },
+        {
+          id: 'stage_3_syscall',
+          stepNum: 3,
+          timeOffset: 6400,
+          name: `3. Invoking ${cmdData.syscall || 'Syscall Gateway'} (Ring 0)`,
+          simpleTitle: '3. Syscall Gate',
+          layer: 'Syscall Security Gateway',
+          activeNode: 'syscall_dispatcher',
+          route: { from: 'path', to: 'syscall', color: 0xff0077 },
+          sound: 'syscall',
+          cameraTarget: 'syscall',
+          ring: 0,
+          syscall: cmdData.syscall || 'execve() / syscall()',
+          registers: { RIP: '0xffffffff8100', RAX: '0x3b' },
+          simpleExplanation: `CPU triggers hardware interrupt or SYSCALL instruction to switch into Ring 0 Supervisor Mode.`,
+          explanation: `Executes ${cmdData.syscall || 'system call'} with validated user parameters.`,
+          whyHappeningHere: cmdData.whyHappeningHere,
+          analogy: `💡 Analogy: Showing security credentials to enter the high-security datacenter vault.`,
+          codeSnippet: `syscall(${cmdData.syscall || 'SYS_execve'}, args...);`,
+          terminalOutput: null
+        },
+        {
+          id: 'stage_4_kernel',
+          stepNum: 4,
+          timeOffset: 9600,
+          name: `4. Kernel Executes on Hardware Subsystems`,
+          simpleTitle: '4. Hardware Exec',
+          layer: 'Kernel Core & Hardware Matrix',
+          activeNode: nodeTarget,
+          route: { from: 'syscall', to: 'cpu', color: 0x2979ff },
+          sound: 'kernel',
+          cameraTarget: cameraTarget,
+          ring: 0,
+          syscall: null,
+          registers: { RIP: '0xffffffff8140', RAX: '0x00000000' },
+          simpleExplanation: `Operating system kernel coordinates CPU cores, page tables, and storage controllers.`,
+          explanation: cmdData.whyHappeningHere,
+          whyHappeningHere: cmdData.whyHappeningHere,
+          analogy: `💡 Analogy: Engine cylinders firing in perfect rhythm to deliver output.`,
+          codeSnippet: `// Kernel executes internal driver routine for ${cmdData.name}`,
+          terminalOutput: null
+        },
+        {
+          id: 'stage_5_output',
+          stepNum: 5,
+          timeOffset: 12800,
+          name: `5. Output Stream Delivered to Terminal`,
+          simpleTitle: '5. Done',
+          layer: 'User Space (Terminal Output)',
+          activeNode: 'terminal',
+          route: { from: 'cpu', to: 'terminal', color: 0x00f3ff },
+          sound: 'success',
+          cameraTarget: 'userspace',
+          ring: 3,
+          syscall: 'write(1)',
+          registers: { RIP: '0x7fff4100', RAX: '0x0' },
+          simpleExplanation: `Data stream is written to standard output (stdout fd 1) and rendered on your screen.`,
+          explanation: `Streams formatted output back into terminal PTY master.`,
+          whyHappeningHere: 'Terminal emulator rasterizes characters on screen in User Space.',
+          analogy: `💡 Analogy: Receiving the final printed report back at your desk.`,
+          codeSnippet: `write(STDOUT_FILENO, output_buffer, len);`,
+          terminalOutput: cmdData.output 
+            ? `user@linux:~$ ${rawInput || cmdData.command}\n${cmdData.output}\nuser@linux:~$ ` 
+            : `user@linux:~$ ${rawInput || cmdData.command}\nuser@linux:~$ `
+        }
+      ]
+    };
   }
 
   buildBuiltinPlan(cmdName, fullCmd, parts) {
