@@ -37,117 +37,139 @@ class SoundFX {
     return this.muted;
   }
 
-  // Key press mechanical / digital click
+  // Realistic Mechanical Keyboard Click (Cherry MX Blue / Topre switch acoustic)
   playKeyClick() {
     if (this.muted) return;
     this.ensureContext();
     if (!this.ctx) return;
 
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
     const now = this.ctx.currentTime;
 
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(800 + Math.random() * 400, now);
-    osc.frequency.exponentialRampToValueAtTime(150, now + 0.04);
+    // 1. High tactile crisp click
+    const osc1 = this.ctx.createOscillator();
+    const gain1 = this.ctx.createGain();
+    osc1.type = 'triangle';
+    const clickPitch = 1200 + Math.random() * 400;
+    osc1.frequency.setValueAtTime(clickPitch, now);
+    osc1.frequency.exponentialRampToValueAtTime(300, now + 0.025);
+    gain1.gain.setValueAtTime(0.2, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+    osc1.connect(gain1);
+    gain1.connect(this.masterGain);
+    osc1.start(now);
+    osc1.stop(now + 0.035);
 
-    gain.gain.setValueAtTime(0.15, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-    osc.connect(gain);
-    gain.connect(this.masterGain);
-
-    osc.start(now);
-    osc.stop(now + 0.045);
+    // 2. Warm Keycap Bottom-Out Thump
+    const osc2 = this.ctx.createOscillator();
+    const gain2 = this.ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(140 + Math.random() * 30, now);
+    osc2.frequency.exponentialRampToValueAtTime(50, now + 0.05);
+    gain2.gain.setValueAtTime(0.25, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    osc2.connect(gain2);
+    gain2.connect(this.masterGain);
+    osc2.start(now);
+    osc2.stop(now + 0.055);
   }
 
-  // Syscall warp transition (Ring 3 -> Ring 0)
+  // Epic Syscall Warp Transition (Ring 3 -> Ring 0 Sub-bass & Laser)
   playSyscall() {
     if (this.muted) return;
     this.ensureContext();
     if (!this.ctx) return;
 
-    const osc1 = this.ctx.createOscillator();
-    const osc2 = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
     const now = this.ctx.currentTime;
 
-    osc1.type = 'sawtooth';
-    osc1.frequency.setValueAtTime(220, now);
-    osc1.frequency.exponentialRampToValueAtTime(880, now + 0.15);
-    osc1.frequency.exponentialRampToValueAtTime(110, now + 0.3);
+    // Sub-bass Drop (Earth-shaking privilege switch)
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(90, now);
+    subOsc.frequency.exponentialRampToValueAtTime(35, now + 0.35);
+    subGain.gain.setValueAtTime(0.4, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    subOsc.connect(subGain);
+    subGain.connect(this.masterGain);
+    subOsc.start(now);
+    subOsc.stop(now + 0.36);
 
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(440, now);
-    osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.15);
-    osc2.frequency.exponentialRampToValueAtTime(220, now + 0.3);
+    // High Tech Laser Sweep
+    const laserOsc = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const laserGain = this.ctx.createGain();
+    laserOsc.type = 'sawtooth';
+    laserOsc.frequency.setValueAtTime(350, now);
+    laserOsc.frequency.exponentialRampToValueAtTime(1400, now + 0.18);
+    laserOsc.frequency.exponentialRampToValueAtTime(180, now + 0.38);
 
-    gain.gain.setValueAtTime(0.01, now);
-    gain.gain.linearRampToValueAtTime(0.25, now + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(800, now);
+    filter.Q.setValueAtTime(4.0, now);
 
-    osc1.connect(gain);
-    osc2.connect(gain);
-    gain.connect(this.masterGain);
+    laserGain.gain.setValueAtTime(0.01, now);
+    laserGain.gain.linearRampToValueAtTime(0.22, now + 0.08);
+    laserGain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
 
-    osc1.start(now);
-    osc2.start(now);
-    osc1.stop(now + 0.31);
-    osc2.stop(now + 0.31);
+    laserOsc.connect(filter);
+    filter.connect(laserGain);
+    laserGain.connect(this.masterGain);
+
+    laserOsc.start(now);
+    laserOsc.stop(now + 0.39);
   }
 
-  // Process Fork boom
+  // Process Fork Cinematic Boom
   playFork() {
     if (this.muted) return;
     this.ensureContext();
     if (!this.ctx) return;
 
+    const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-    const now = this.ctx.currentTime;
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(160, now);
-    osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.exponentialRampToValueAtTime(45, now + 0.3);
 
-    gain.gain.setValueAtTime(0.35, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    gain.gain.setValueAtTime(0.45, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(now);
-    osc.stop(now + 0.26);
+    osc.stop(now + 0.32);
   }
 
-  // Kernel CPU / MMU Pulse
+  // Kernel CPU / MMU High-Tech Computation Pulse
   playKernelPulse() {
     if (this.muted) return;
     this.ensureContext();
     if (!this.ctx) return;
 
-    const osc = this.ctx.createOscillator();
-    const filter = this.ctx.createBiquadFilter();
-    const gain = this.ctx.createGain();
     const now = this.ctx.currentTime;
+    const freqs = [580, 740, 920];
 
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(520, now);
-    osc.frequency.setValueAtTime(650, now + 0.04);
-    osc.frequency.setValueAtTime(780, now + 0.08);
+    freqs.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const t = now + idx * 0.035;
 
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(1200, now);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.5, t + 0.06);
 
-    gain.gain.setValueAtTime(0.12, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      gain.gain.setValueAtTime(0.12, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
 
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.masterGain);
+      osc.connect(gain);
+      gain.connect(this.masterGain);
 
-    osc.start(now);
-    osc.stop(now + 0.16);
+      osc.start(t);
+      osc.stop(t + 0.08);
+    });
   }
 
   // VFS / Storage Read Chirp
@@ -156,49 +178,49 @@ class SoundFX {
     this.ensureContext();
     if (!this.ctx) return;
 
+    const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-    const now = this.ctx.currentTime;
 
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(1400, now);
-    osc.frequency.exponentialRampToValueAtTime(320, now + 0.08);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1800, now);
+    osc.frequency.exponentialRampToValueAtTime(400, now + 0.07);
 
     gain.gain.setValueAtTime(0.18, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(now);
-    osc.stop(now + 0.09);
+    osc.stop(now + 0.08);
   }
 
-  // Command Completion Success Chime (Major chord arpeggio)
+  // Epic Major Harmonic Chord (Command Completion)
   playSuccess() {
     if (this.muted) return;
     this.ensureContext();
     if (!this.ctx) return;
 
-    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
     const now = this.ctx.currentTime;
+    const notes = [261.63, 329.63, 392.00, 523.25, 659.25]; // C4, E4, G4, C5, E5
 
     notes.forEach((freq, index) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      const startTime = now + index * 0.06;
+      const startTime = now + index * 0.05;
 
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.15, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+      gain.gain.setValueAtTime(0.14, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.6);
 
       osc.connect(gain);
       gain.connect(this.masterGain);
 
       osc.start(startTime);
-      osc.stop(startTime + 0.36);
+      osc.stop(startTime + 0.62);
     });
   }
 
@@ -208,22 +230,22 @@ class SoundFX {
     this.ensureContext();
     if (!this.ctx) return;
 
+    const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-    const now = this.ctx.currentTime;
 
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(140, now);
-    osc.frequency.setValueAtTime(120, now + 0.1);
+    osc.frequency.setValueAtTime(160, now);
+    osc.frequency.setValueAtTime(110, now + 0.12);
 
-    gain.gain.setValueAtTime(0.25, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(now);
-    osc.stop(now + 0.26);
+    osc.stop(now + 0.32);
   }
 }
 

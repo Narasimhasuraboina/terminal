@@ -32,6 +32,13 @@ export class HudOverlay {
             🛡️ RING 3 (USER SPACE)
           </div>
 
+          <!-- LIVE CPU REGISTERS HUD STRIP -->
+          <div class="hud-registers-strip" id="hud-registers-strip">
+            <span class="reg-chip" id="reg-rip">RIP: 0x7fff4010</span>
+            <span class="reg-chip" id="reg-rax">RAX: 0x0</span>
+            <span class="reg-chip" id="reg-mmu">MMU: 4-LVL PAGING</span>
+          </div>
+
           <button class="hud-action-btn blueprint-btn" id="btn-blueprint">
             <span class="btn-icon">🗺️</span> 2D Circuit Flowchart
           </button>
@@ -109,6 +116,11 @@ export class HudOverlay {
           <button class="ctrl-btn" id="btn-reset" title="Reset Simulation">↺</button>
         </div>
 
+        <!-- INTERACTIVE TIMELINE SCRUBBER SLIDER -->
+        <div class="timeline-scrubber-wrap">
+          <input type="range" class="timeline-scrubber" id="timeline-scrubber" min="0" max="7" value="0" step="1" title="Drag to scrub execution" />
+        </div>
+
         <div class="timeline-meta">
           <span id="plan-name" class="plan-name">ls -la</span>
           <span id="timeline-step-info" class="step-info">Step 1 of 8</span>
@@ -116,16 +128,16 @@ export class HudOverlay {
 
         <div class="timeline-settings">
           <div class="speed-selector">
-            <button class="speed-btn" data-speed="0.5">Slow (0.5x)</button>
-            <button class="speed-btn active" data-speed="1.0">Normal (1.0x)</button>
-            <button class="speed-btn" data-speed="2.0">Fast (2.0x)</button>
+            <button class="speed-btn" data-speed="0.5">0.5x</button>
+            <button class="speed-btn active" data-speed="1.0">1.0x</button>
+            <button class="speed-btn" data-speed="2.0">2.0x</button>
           </div>
 
           <div class="camera-presets-group">
-            <button class="cam-btn" data-cam="overview" title="Full Motherboard">🌐 Overview</button>
-            <button class="cam-btn" data-cam="userspace" title="Terminal & Shell">🖥️ Terminal</button>
+            <button class="cam-btn" data-cam="overview" title="Full Motherboard">🌐 All</button>
+            <button class="cam-btn" data-cam="userspace" title="Terminal & Shell">🖥️ Term</button>
             <button class="cam-btn" data-cam="syscall" title="Syscall Security Gate">🛡️ Gate</button>
-            <button class="cam-btn" data-cam="kernel" title="CPU & RAM Memory">🧠 CPU/RAM</button>
+            <button class="cam-btn" data-cam="kernel" title="CPU & RAM Memory">🧠 CPU</button>
             <button class="cam-btn" data-cam="vfs" title="NVMe SSD Storage">💾 SSD</button>
           </div>
 
@@ -147,6 +159,14 @@ export class HudOverlay {
     const quizBtn = this.container.querySelector('#btn-quiz');
     const guideBtn = this.container.querySelector('#btn-guide');
     const blueprintBtn = this.container.querySelector('#btn-blueprint');
+    const scrubber = this.container.querySelector('#timeline-scrubber');
+
+    if (scrubber) {
+      scrubber.addEventListener('input', (e) => {
+        const stepIdx = parseInt(e.target.value);
+        this.runner.jumpToStage(stepIdx);
+      });
+    }
 
     if (blueprintBtn) {
       blueprintBtn.addEventListener('click', () => {
@@ -219,6 +239,12 @@ export class HudOverlay {
     const nameEl = this.container.querySelector('#plan-name');
     if (nameEl) nameEl.textContent = plan.name;
 
+    const scrubber = this.container.querySelector('#timeline-scrubber');
+    if (scrubber) {
+      scrubber.max = Math.max(0, plan.stages.length - 1);
+      scrubber.value = 0;
+    }
+
     // Render step stepper pills inside Side Process Panel
     const stepper = this.container.querySelector('#dir-stepper');
     if (stepper) {
@@ -251,14 +277,35 @@ export class HudOverlay {
       }
     }
 
-    // 2. Active Syscall Badge
+    // 2. Live CPU Registers HUD
+    const regRip = this.container.querySelector('#reg-rip');
+    const regRax = this.container.querySelector('#reg-rax');
+    const regMmu = this.container.querySelector('#reg-mmu');
+    if (stage.registers) {
+      if (regRip) regRip.textContent = `RIP: ${stage.registers.RIP || '0x7ffff7fd'}`;
+      if (regRax) regRax.textContent = `RAX: ${stage.registers.RAX || '0x0'}`;
+      if (regMmu) regMmu.textContent = stage.registers.RDI ? `RDI: ${stage.registers.RDI}` : 'MMU: 4-LVL PAGING';
+    } else {
+      if (regRip) regRip.textContent = `RIP: 0x55555555`;
+      if (regRax) regRax.textContent = stage.syscall ? `RAX: ${stage.syscall}()` : 'RAX: 0x0';
+      if (regMmu) regMmu.textContent = 'MMU: CR3 ACTIVE';
+    }
+
+    // 3. Update Scrubber
+    const scrubber = this.container.querySelector('#timeline-scrubber');
+    if (scrubber) {
+      scrubber.max = Math.max(0, totalStages - 1);
+      scrubber.value = stageIndex;
+    }
+
+    // 4. Active Syscall Badge
     const syscallEl = this.container.querySelector('#dir-syscall-badge');
     if (syscallEl) {
       syscallEl.textContent = stage.syscall ? `SYSCALL: ${stage.syscall}` : 'NO SYSCALL (USER MODE)';
       syscallEl.className = `side-syscall-badge ${stage.syscall ? 'has-syscall' : ''}`;
     }
 
-    // 3. Side Process Panel Content
+    // 5. Side Process Panel Content
     const stepBadge = this.container.querySelector('#dir-step-badge');
     const layerBadge = this.container.querySelector('#dir-layer-badge');
     const titleEl = this.container.querySelector('#dir-title');
@@ -275,14 +322,14 @@ export class HudOverlay {
     if (analogyEl) analogyEl.textContent = stage.analogy || '💡 Processing operating system request.';
     if (stepInfoEl) stepInfoEl.textContent = `Step ${stageIndex + 1} of ${totalStages}`;
 
-    // 4. Update Nav Pills
+    // 6. Update Nav Pills
     const pills = this.container.querySelectorAll('.side-nav-pill');
     pills.forEach((pill, idx) => {
       pill.classList.toggle('active', idx === stageIndex);
       pill.classList.toggle('passed', idx < stageIndex);
     });
 
-    // 5. Reset & Animate Timer Bar
+    // 7. Reset & Animate Timer Bar
     const timerBar = this.container.querySelector('#dir-timer-bar');
     if (timerBar) {
       timerBar.style.transition = 'none';
