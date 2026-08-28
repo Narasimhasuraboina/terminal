@@ -138,19 +138,11 @@ export class TimelineRunner {
     const highlightColor = isErrorStage ? 0xff0055 : null;
     this.highlightStageNode(stage, highlightColor);
 
-    // 2. Move 3D Waypoint Beacon & Update Pin Billboard
+    // 2. Move 3D Waypoint Beacon Pin
     if (this.waypointBeacon && stage.activeNode) {
       const targetPos = this.nodePositions[stage.activeNode] || new THREE.Vector3(0, 0, 0);
       this.waypointBeacon.moveTo(targetPos, 600);
-
-      const routeText = stage.route ? `${stage.route.from} ➔ ${stage.route.to}` : `${stage.layer} (Local)`;
-      this.waypointBeacon.updateBillboard({
-        location: stage.name,
-        route: routeText,
-        action: stage.simpleExplanation || stage.explanation,
-        why: stage.analogy || 'Required by Linux kernel security and hardware architecture.',
-        isError: isErrorStage
-      });
+      this.waypointBeacon.updateLabel(stage.simpleTitle || stage.name, isErrorStage);
     }
 
     // 3. Update 3D Live Desktop Monitor Screen in-world
@@ -172,9 +164,13 @@ export class TimelineRunner {
       }
     }
 
-    // 5. Camera Transition (if auto-camera enabled)
-    if (this.autoCamera && stage.cameraTarget) {
-      this.cameraManager.transitionTo(stage.cameraTarget, 900);
+    // 5. Cinematic Zoom to Active Node
+    if (this.autoCamera) {
+      if (stage.activeNode && this.cameraManager.zoomToNode) {
+        this.cameraManager.zoomToNode(stage.activeNode, 900);
+      } else if (stage.cameraTarget) {
+        this.cameraManager.transitionTo(stage.cameraTarget, 900);
+      }
     }
 
     // 6. Send 3D Photon Data Packet along Spline
