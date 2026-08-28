@@ -32,6 +32,11 @@ class App {
     if (initialPlan) {
       this.hudOverlay.updatePlan(initialPlan);
       this.timelineRunner.loadPlan(initialPlan);
+      setTimeout(() => {
+        if (!this.timelineRunner.isPlaying) {
+          this.timelineRunner.play();
+        }
+      }, 1000);
     }
   }
 

@@ -21,6 +21,10 @@ export class CommandEngine {
     };
   }
 
+  getCommandPlan(inputStr) {
+    return this.generatePlan(inputStr);
+  }
+
   generatePlan(inputStr) {
     const parsed = this.parseCommand(inputStr);
     if (!parsed) return null;
