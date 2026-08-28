@@ -7,7 +7,7 @@ export class CameraManager {
     this.domElement = domElement;
 
     // Camera target (lookAt point)
-    this.target = new THREE.Vector3(0, 5, 0);
+    this.target = new THREE.Vector3(0, 4, 0);
 
     // Orbit state
     this.isDragging = false;
@@ -16,97 +16,97 @@ export class CameraManager {
     this.spherical = new THREE.Spherical();
     this.spherical.setFromVector3(this.camera.position.clone().sub(this.target));
 
-    this.minDistance = 8;
-    this.maxDistance = 180;
+    this.minDistance = 6;
+    this.maxDistance = 160;
     this.minPolarAngle = 0.1;
     this.maxPolarAngle = Math.PI / 2 + 0.05;
 
-    // Architectural Layer Presets
+    // Overview Presets
     this.presets = {
       overview: {
-        pos: new THREE.Vector3(0, 42, 75),
-        target: new THREE.Vector3(0, 4, 0),
+        pos: new THREE.Vector3(-4, 36, 68),
+        target: new THREE.Vector3(-4, 3, 2),
         name: 'Full Motherboard'
       },
       userspace: {
-        pos: new THREE.Vector3(-38, 14, 28),
-        target: new THREE.Vector3(-38, 4.5, 10),
+        pos: new THREE.Vector3(-36, 12, 26),
+        target: new THREE.Vector3(-36, 3.5, 10),
         name: 'Terminal & Shell'
       },
       syscall: {
-        pos: new THREE.Vector3(-10, 12, 22),
-        target: new THREE.Vector3(-10, 5, 2),
+        pos: new THREE.Vector3(-10, 11, 20),
+        target: new THREE.Vector3(-10, 4.0, 2),
         name: 'Syscall Security Gate'
       },
       kernel: {
-        pos: new THREE.Vector3(16, 14, 18),
-        target: new THREE.Vector3(16, 4, -2),
+        pos: new THREE.Vector3(16, 12, 16),
+        target: new THREE.Vector3(16, 3.0, -2),
         name: 'CPU & RAM Memory'
       },
       vfs: {
-        pos: new THREE.Vector3(42, 14, 26),
-        target: new THREE.Vector3(42, 4, 12),
+        pos: new THREE.Vector3(40, 12, 25),
+        target: new THREE.Vector3(40, 3.0, 11),
         name: 'NVMe SSD Storage'
       }
     };
 
-    // Close-Up Node Specific Target Views (Dynamic Zoom-In)
+    // Close-Up Node Views (Framed directly in viewport center)
     this.nodeZoomViews = {
       terminal: {
-        pos: new THREE.Vector3(-41, 7.5, 23),
-        target: new THREE.Vector3(-41, 4.8, 10)
+        pos: new THREE.Vector3(-38.5, 6.2, 19.5),
+        target: new THREE.Vector3(-38.5, 3.6, 10)
       },
       lexer: {
-        pos: new THREE.Vector3(-32, 8.0, 22),
-        target: new THREE.Vector3(-32, 5.0, 10)
+        pos: new THREE.Vector3(-29.0, 6.8, 18.0),
+        target: new THREE.Vector3(-31.0, 3.8, 10)
       },
       path: {
-        pos: new THREE.Vector3(-32, 8.0, 22),
-        target: new THREE.Vector3(-32, 5.0, 10)
+        pos: new THREE.Vector3(-29.0, 6.8, 18.0),
+        target: new THREE.Vector3(-31.0, 3.8, 10)
       },
       fork: {
-        pos: new THREE.Vector3(-15, 6.5, 17),
-        target: new THREE.Vector3(-15, 2.8, 6)
+        pos: new THREE.Vector3(-14.5, 5.2, 14.5),
+        target: new THREE.Vector3(-14.5, 2.0, 5.0)
       },
       syscall_dispatcher: {
-        pos: new THREE.Vector3(-10, 9.5, 18),
-        target: new THREE.Vector3(-10, 5.5, 0)
+        pos: new THREE.Vector3(-10.0, 7.5, 16.0),
+        target: new THREE.Vector3(-10.0, 4.2, 0)
       },
       execve: {
-        pos: new THREE.Vector3(-5, 6.5, 17),
-        target: new THREE.Vector3(-5, 2.8, 6)
+        pos: new THREE.Vector3(-5.5, 5.2, 14.5),
+        target: new THREE.Vector3(-5.5, 2.0, 5.0)
       },
       fd_table: {
-        pos: new THREE.Vector3(-10, 9.5, 18),
-        target: new THREE.Vector3(-10, 5.5, 0)
+        pos: new THREE.Vector3(-10.0, 7.5, 16.0),
+        target: new THREE.Vector3(-10.0, 4.2, 0)
       },
       cpu_core: {
-        pos: new THREE.Vector3(10, 8.5, 11),
-        target: new THREE.Vector3(10, 2.5, -2)
+        pos: new THREE.Vector3(10.5, 6.5, 6.5),
+        target: new THREE.Vector3(10.5, 1.8, -2.5)
       },
       scheduler: {
-        pos: new THREE.Vector3(10, 8.5, 11),
-        target: new THREE.Vector3(10, 2.5, -2)
+        pos: new THREE.Vector3(10.5, 6.5, 6.5),
+        target: new THREE.Vector3(10.5, 1.8, -2.5)
       },
       mmu_memory: {
-        pos: new THREE.Vector3(22, 9.0, 12),
-        target: new THREE.Vector3(22, 3.5, -2)
+        pos: new THREE.Vector3(21.5, 6.8, 7.0),
+        target: new THREE.Vector3(21.5, 2.2, -2.5)
       },
       vfs_tree: {
-        pos: new THREE.Vector3(38, 7.5, 22),
-        target: new THREE.Vector3(38, 2.5, 12)
+        pos: new THREE.Vector3(36.0, 5.8, 19.5),
+        target: new THREE.Vector3(36.0, 1.8, 11.5)
       },
       page_cache: {
-        pos: new THREE.Vector3(38, 7.5, 22),
-        target: new THREE.Vector3(38, 2.5, 12)
+        pos: new THREE.Vector3(36.0, 5.8, 19.5),
+        target: new THREE.Vector3(36.0, 1.8, 11.5)
       },
       storage_disk: {
-        pos: new THREE.Vector3(46, 8.5, 23),
-        target: new THREE.Vector3(46, 2.5, 12)
+        pos: new THREE.Vector3(45.5, 6.2, 20.0),
+        target: new THREE.Vector3(45.5, 1.8, 11.5)
       },
       disk: {
-        pos: new THREE.Vector3(46, 8.5, 23),
-        target: new THREE.Vector3(46, 2.5, 12)
+        pos: new THREE.Vector3(45.5, 6.2, 20.0),
+        target: new THREE.Vector3(45.5, 1.8, 11.5)
       }
     };
 
@@ -170,14 +170,14 @@ export class CameraManager {
     this.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
   }
 
-  zoomToNode(nodeId, duration = 900) {
+  zoomToNode(nodeId, duration = 800) {
     const view = this.nodeZoomViews[nodeId];
     if (!view) return;
 
     this.animateTo(view.pos, view.target, duration);
   }
 
-  transitionTo(presetKey, duration = 900) {
+  transitionTo(presetKey, duration = 800) {
     const preset = this.presets[presetKey];
     if (!preset) return;
 
@@ -185,7 +185,7 @@ export class CameraManager {
     this.animateTo(preset.pos, preset.target, duration);
   }
 
-  animateTo(targetPos, targetLookAt, duration = 900) {
+  animateTo(targetPos, targetLookAt, duration = 800) {
     const startPos = this.camera.position.clone();
     const startTarget = this.target.clone();
 

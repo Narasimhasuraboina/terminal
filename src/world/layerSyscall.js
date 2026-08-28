@@ -14,81 +14,81 @@ export class LayerSyscall {
   }
 
   buildPlatform() {
-    const baseGeo = new THREE.BoxGeometry(22, 1.2, 22);
+    const baseGeo = new THREE.BoxGeometry(22, 0.8, 22);
     const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x181028,
-      metalness: 0.8,
+      color: 0x140d22,
+      metalness: 0.85,
       roughness: 0.25,
       emissive: 0x4a154b,
       emissiveIntensity: 0.2
     });
     const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-    baseMesh.position.y = -0.6;
+    baseMesh.position.y = -0.4;
     this.group.add(baseMesh);
 
     const edgeGeo = new THREE.EdgesGeometry(baseGeo);
     const edgeMat = new THREE.LineBasicMaterial({ color: 0xff0077, linewidth: 2 });
     const edgeLines = new THREE.LineSegments(edgeGeo, edgeMat);
-    edgeLines.position.y = -0.6;
+    edgeLines.position.y = -0.4;
     this.group.add(edgeLines);
 
-    this.createHoloLabel('🛡️ STEP 2: SECURITY GATEWAY (RING 3 ➔ 0)', new THREE.Vector3(0, 13, -9), 0xff0077, '#ff0077');
+    this.createHoloLabel('🛡️ STEP 2: SECURITY GATEWAY (RING 3 ➔ 0)', new THREE.Vector3(0, 10.5, -8.0), 0xff0077, '#ff0077');
   }
 
   createHoloLabel(text, pos, colorHex, borderHex) {
     const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 130;
+    canvas.width = 512;
+    canvas.height = 100;
     const ctx = canvas.getContext('2d');
 
-    ctx.fillStyle = 'rgba(24, 6, 28, 0.92)';
-    ctx.roundRect(10, 10, 580, 110, 18);
+    ctx.fillStyle = 'rgba(20, 6, 24, 0.9)';
+    ctx.roundRect(8, 8, 496, 84, 14);
     ctx.fill();
     ctx.strokeStyle = borderHex;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
-    ctx.font = 'bold 28px system-ui, sans-serif';
+    ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, 300, 65);
+    ctx.fillText(text, 256, 50);
 
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(spriteMat);
     sprite.position.copy(pos);
-    sprite.scale.set(13, 2.8, 1);
+    sprite.scale.set(10, 2.0, 1);
     this.group.add(sprite);
   }
 
   buildGateModel() {
-    // 1. Massive Security Arch (The Gateway between User Space & Kernel)
+    // 1. Cyber Security Arch (User Space ➔ Kernel Space Gate)
     const archGroup = new THREE.Group();
     archGroup.position.set(0, 0, 0);
 
     const pillarMat = new THREE.MeshStandardMaterial({
-      color: 0x1f1430,
+      color: 0x1a0f2e,
       metalness: 0.9,
       roughness: 0.2,
       emissive: 0xff0055,
-      emissiveIntensity: 0.2
+      emissiveIntensity: 0.15
     });
 
-    const leftPillar = new THREE.Mesh(new THREE.BoxGeometry(2, 8, 2), pillarMat);
-    leftPillar.position.set(-6, 4, 0);
+    const leftPillar = new THREE.Mesh(new THREE.BoxGeometry(1.6, 6.5, 1.6), pillarMat);
+    leftPillar.position.set(-5, 3.25, 0);
     archGroup.add(leftPillar);
 
-    const rightPillar = new THREE.Mesh(new THREE.BoxGeometry(2, 8, 2), pillarMat);
-    rightPillar.position.set(6, 4, 0);
+    const rightPillar = new THREE.Mesh(new THREE.BoxGeometry(1.6, 6.5, 1.6), pillarMat);
+    rightPillar.position.set(5, 3.25, 0);
     archGroup.add(rightPillar);
 
-    const topBeam = new THREE.Mesh(new THREE.BoxGeometry(14, 2, 2.2), pillarMat);
-    topBeam.position.set(0, 8, 0);
+    const topBeam = new THREE.Mesh(new THREE.BoxGeometry(11.6, 1.4, 1.8), pillarMat);
+    topBeam.position.set(0, 6.5, 0);
     archGroup.add(topBeam);
 
     // Glowing Laser Forcefield Curtain
-    const shieldGeo = new THREE.PlaneGeometry(10, 7);
+    const shieldGeo = new THREE.PlaneGeometry(8.4, 5.8);
     const shieldMat = new THREE.MeshBasicMaterial({
       color: 0xff0055,
       transparent: true,
@@ -96,7 +96,7 @@ export class LayerSyscall {
       side: THREE.DoubleSide
     });
     this.shieldMesh = new THREE.Mesh(shieldGeo, shieldMat);
-    this.shieldMesh.position.set(0, 4, 0);
+    this.shieldMesh.position.set(0, 3.25, 0);
     archGroup.add(this.shieldMesh);
 
     this.group.add(archGroup);
@@ -112,15 +112,15 @@ export class LayerSyscall {
 
     // 2. Process Cloning Chamber (fork station)
     const forkPod = new THREE.Mesh(
-      new THREE.CylinderGeometry(2, 2.2, 3.5, 16),
+      new THREE.CylinderGeometry(1.6, 1.8, 3.0, 16),
       new THREE.MeshStandardMaterial({
-        color: 0x221035,
+        color: 0x1f0e2f,
         emissive: 0xff9500,
         emissiveIntensity: 0.3,
         metalness: 0.8
       })
     );
-    forkPod.position.set(-5, 2, 6);
+    forkPod.position.set(-4.5, 1.5, 5.0);
     this.group.add(forkPod);
 
     this.nodes['fork'] = forkPod;
@@ -134,15 +134,15 @@ export class LayerSyscall {
 
     // 3. Execve Transformation Chamber
     const execPod = new THREE.Mesh(
-      new THREE.CylinderGeometry(2, 2.2, 3.5, 16),
+      new THREE.CylinderGeometry(1.6, 1.8, 3.0, 16),
       new THREE.MeshStandardMaterial({
-        color: 0x221035,
+        color: 0x1f0e2f,
         emissive: 0x30d158,
         emissiveIntensity: 0.3,
         metalness: 0.8
       })
     );
-    execPod.position.set(5, 2, 6);
+    execPod.position.set(4.5, 1.5, 5.0);
     this.group.add(execPod);
 
     this.nodes['execve'] = execPod;
@@ -162,7 +162,7 @@ export class LayerSyscall {
     if (!node) return;
 
     if (active) {
-      node.scale.set(1.15, 1.15, 1.15);
+      node.scale.set(1.1, 1.1, 1.1);
       if (node.material && node.material.emissive) {
         node.material.emissive.setHex(colorHex);
         node.material.emissiveIntensity = 0.95;
@@ -170,14 +170,14 @@ export class LayerSyscall {
     } else {
       node.scale.set(1, 1, 1);
       if (node.material && node.material.emissive) {
-        node.material.emissiveIntensity = 0.2;
+        node.material.emissiveIntensity = 0.15;
       }
     }
   }
 
   pulseRingShield() {
     if (this.shieldMesh) {
-      this.shieldMesh.scale.set(1.1, 1.1, 1.1);
+      this.shieldMesh.scale.set(1.08, 1.08, 1.08);
       setTimeout(() => {
         if (this.shieldMesh) this.shieldMesh.scale.set(1, 1, 1);
       }, 300);

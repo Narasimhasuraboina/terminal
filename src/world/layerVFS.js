@@ -5,7 +5,7 @@ export class LayerVFS {
     this.sceneManager = sceneManager;
     this.scene = sceneManager.scene;
     this.group = new THREE.Group();
-    this.group.position.set(42, 0, 10);
+    this.group.position.set(40, 0, 10);
     this.scene.add(this.group);
 
     this.nodes = {};
@@ -14,87 +14,96 @@ export class LayerVFS {
   }
 
   buildPlatform() {
-    const baseGeo = new THREE.BoxGeometry(22, 1.2, 20);
+    const baseGeo = new THREE.BoxGeometry(22, 0.8, 20);
     const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x061a15,
-      metalness: 0.8,
+      color: 0x061814,
+      metalness: 0.85,
       roughness: 0.25,
       emissive: 0x008855,
       emissiveIntensity: 0.2
     });
     const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-    baseMesh.position.y = -0.6;
+    baseMesh.position.y = -0.4;
     this.group.add(baseMesh);
 
     const edgeGeo = new THREE.EdgesGeometry(baseGeo);
     const edgeMat = new THREE.LineBasicMaterial({ color: 0x00ff88, linewidth: 2 });
     const edgeLines = new THREE.LineSegments(edgeGeo, edgeMat);
-    edgeLines.position.y = -0.6;
+    edgeLines.position.y = -0.4;
     this.group.add(edgeLines);
 
-    this.createHoloLabel('💾 STEP 4: NVMe SSD & FILE SYSTEM', new THREE.Vector3(0, 13, -8), 0x00ff88, '#00ff88');
+    this.createHoloLabel('💾 STEP 4: NVMe SSD & FILE SYSTEM', new THREE.Vector3(0, 10.5, -7.5), 0x00ff88, '#00ff88');
   }
 
   createHoloLabel(text, pos, colorHex, borderHex) {
     const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 130;
+    canvas.width = 512;
+    canvas.height = 100;
     const ctx = canvas.getContext('2d');
 
-    ctx.fillStyle = 'rgba(4, 24, 16, 0.92)';
-    ctx.roundRect(10, 10, 580, 110, 18);
+    ctx.fillStyle = 'rgba(4, 24, 16, 0.9)';
+    ctx.roundRect(8, 8, 496, 84, 14);
     ctx.fill();
     ctx.strokeStyle = borderHex;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
-    ctx.font = 'bold 28px system-ui, sans-serif';
+    ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, 300, 65);
+    ctx.fillText(text, 256, 50);
 
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(spriteMat);
     sprite.position.copy(pos);
-    sprite.scale.set(13, 2.8, 1);
+    sprite.scale.set(10, 2.0, 1);
     this.group.add(sprite);
   }
 
   buildHardwareModels() {
-    // 1. Realistic M.2 NVMe SSD Card
+    // 1. Realistic M.2 2280 NVMe SSD Stick
     const ssdGroup = new THREE.Group();
-    ssdGroup.position.set(-4, 0, 2);
+    ssdGroup.position.set(-4.0, 0, 1.5);
 
-    // Dark Green/Black M.2 PCB Stick
+    // Matte Black M.2 PCB
     const ssdPcb = new THREE.Mesh(
-      new THREE.BoxGeometry(4.5, 0.3, 8),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 })
+      new THREE.BoxGeometry(4.2, 0.25, 7.8),
+      new THREE.MeshStandardMaterial({ color: 0x07111a, roughness: 0.3, metalness: 0.4 })
     );
-    ssdPcb.position.y = 0.2;
+    ssdPcb.position.y = 0.15;
     ssdGroup.add(ssdPcb);
 
-    // Controller Chip
+    // PCIe Gold Connector Pins at the edge
+    const goldPins = new THREE.Mesh(
+      new THREE.BoxGeometry(4.0, 0.28, 0.6),
+      new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.95, roughness: 0.1 })
+    );
+    goldPins.position.set(0, 0.15, 3.7);
+    ssdGroup.add(goldPins);
+
+    // High-Performance Flash Controller Chip (Silver Metal with Green Glow)
     const controller = new THREE.Mesh(
-      new THREE.BoxGeometry(2.5, 0.5, 2.5),
+      new THREE.BoxGeometry(2.2, 0.45, 2.2),
       new THREE.MeshStandardMaterial({
         color: 0x1e293b,
         emissive: 0x00ff88,
-        emissiveIntensity: 0.3,
-        metalness: 0.9
+        emissiveIntensity: 0.25,
+        metalness: 0.9,
+        roughness: 0.15
       })
     );
-    controller.position.set(0, 0.6, -2);
+    controller.position.set(0, 0.4, -2.0);
     ssdGroup.add(controller);
 
-    // NAND Flash Memory Chips (2 blocks)
+    // 2x 3D TLC NAND Flash Memory Packages
     for (let i = 0; i < 2; i++) {
       const nand = new THREE.Mesh(
-        new THREE.BoxGeometry(3.5, 0.5, 2),
-        new THREE.MeshStandardMaterial({ color: 0x070b14, roughness: 0.2 })
+        new THREE.BoxGeometry(3.2, 0.4, 2.0),
+        new THREE.MeshStandardMaterial({ color: 0x050810, roughness: 0.2, metalness: 0.5 })
       );
-      nand.position.set(0, 0.6, 1 + i * 2.4);
+      nand.position.set(0, 0.4, 0.6 + i * 2.2);
       ssdGroup.add(nand);
     }
 
@@ -111,21 +120,21 @@ export class LayerVFS {
       details: 'Directory entries store filenames and inode pointers. Inodes store permissions (rwxr-xr-x), file size, and physical sector locations.'
     });
 
-    // 2. Secondary Hard Drive Platter (Magnetic Disk)
+    // 2. Secondary Storage Magnetic Disk Platter
     const diskGroup = new THREE.Group();
-    diskGroup.position.set(6, 0, 2);
+    diskGroup.position.set(5.5, 0, 1.5);
 
     const metalPlatter = new THREE.Mesh(
-      new THREE.CylinderGeometry(3.2, 3.2, 0.4, 32),
+      new THREE.CylinderGeometry(2.8, 2.8, 0.35, 32),
       new THREE.MeshStandardMaterial({
-        color: 0x64748b,
+        color: 0x94a3b8,
         metalness: 0.95,
         roughness: 0.1,
         emissive: 0x00ff88,
         emissiveIntensity: 0.15
       })
     );
-    metalPlatter.position.y = 1.5;
+    metalPlatter.position.y = 1.0;
     diskGroup.add(metalPlatter);
 
     this.group.add(diskGroup);
@@ -136,7 +145,7 @@ export class LayerVFS {
     if (!node) return;
 
     if (active) {
-      node.scale.set(1.2, 1.2, 1.2);
+      node.scale.set(1.1, 1.1, 1.1);
       if (node.material && node.material.emissive) {
         node.material.emissive.setHex(colorHex);
         node.material.emissiveIntensity = 0.95;
@@ -144,7 +153,7 @@ export class LayerVFS {
     } else {
       node.scale.set(1, 1, 1);
       if (node.material && node.material.emissive) {
-        node.material.emissiveIntensity = 0.3;
+        node.material.emissiveIntensity = 0.25;
       }
     }
   }

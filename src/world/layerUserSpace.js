@@ -5,7 +5,7 @@ export class LayerUserSpace {
     this.sceneManager = sceneManager;
     this.scene = sceneManager.scene;
     this.group = new THREE.Group();
-    this.group.position.set(-38, 0, 10);
+    this.group.position.set(-36, 0, 10);
     this.scene.add(this.group);
 
     this.nodes = {};
@@ -14,108 +14,105 @@ export class LayerUserSpace {
   }
 
   buildPlatform() {
-    // Motherboard PCB Base
-    const baseGeo = new THREE.BoxGeometry(24, 1.2, 22);
+    // Motherboard PCB Base Plate
+    const baseGeo = new THREE.BoxGeometry(22, 0.8, 20);
     const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x081326,
-      metalness: 0.85,
-      roughness: 0.25,
+      color: 0x06111f,
+      metalness: 0.9,
+      roughness: 0.2,
       emissive: 0x002244,
       emissiveIntensity: 0.2
     });
     const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-    baseMesh.position.y = -0.6;
+    baseMesh.position.y = -0.4;
     this.group.add(baseMesh);
 
     // Glowing cyan edge line
     const edgeGeo = new THREE.EdgesGeometry(baseGeo);
     const edgeMat = new THREE.LineBasicMaterial({ color: 0x00f3ff, linewidth: 2 });
     const edgeLines = new THREE.LineSegments(edgeGeo, edgeMat);
-    edgeLines.position.y = -0.6;
+    edgeLines.position.y = -0.4;
     this.group.add(edgeLines);
 
-    // Permanent High-Contrast Billboard Label
-    this.createHoloLabel('🖥️ STEP 1: USER TERMINAL & SHELL', new THREE.Vector3(0, 12, -8), 0x00f3ff, '#00f3ff');
+    // Floating Platform Label
+    this.createHoloLabel('🖥️ STEP 1: USER TERMINAL & SHELL', new THREE.Vector3(0, 10.5, -7.5), 0x00f3ff, '#00f3ff');
   }
 
   createHoloLabel(text, pos, colorHex, borderHex) {
     const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 120;
+    canvas.width = 512;
+    canvas.height = 100;
     const ctx = canvas.getContext('2d');
 
-    ctx.fillStyle = 'rgba(4, 10, 24, 0.92)';
-    ctx.roundRect(10, 10, 580, 100, 16);
+    ctx.fillStyle = 'rgba(4, 10, 24, 0.9)';
+    ctx.roundRect(8, 8, 496, 84, 14);
     ctx.fill();
     ctx.strokeStyle = borderHex;
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
-    ctx.font = 'bold 28px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, 300, 60);
+    ctx.fillText(text, 256, 50);
 
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(spriteMat);
     sprite.position.copy(pos);
-    sprite.scale.set(12, 2.4, 1);
+    sprite.scale.set(10, 2.0, 1);
     this.group.add(sprite);
   }
 
   buildHardwareModels() {
     // 1. Workstation Desk
-    const deskTop = new THREE.Mesh(
-      new THREE.BoxGeometry(18, 0.6, 12),
-      new THREE.MeshStandardMaterial({
-        color: 0x0f172a,
-        metalness: 0.7,
-        roughness: 0.3
-      })
-    );
-    deskTop.position.set(0, 1.5, 0);
+    const deskMat = new THREE.MeshStandardMaterial({
+      color: 0x0b1120,
+      metalness: 0.8,
+      roughness: 0.25
+    });
+    const deskTop = new THREE.Mesh(new THREE.BoxGeometry(16, 0.5, 10), deskMat);
+    deskTop.position.set(0, 1.2, 0);
     this.group.add(deskTop);
 
-    // Desk Metallic Legs
-    const legMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.1 });
-    const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 3, 16), legMat);
-    leg1.position.set(-8, 0, -5);
+    // Desk Legs
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.1 });
+    const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 2.4, 16), legMat);
+    leg1.position.set(-7, 0, -4);
     this.group.add(leg1);
-
-    const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 3, 16), legMat);
-    leg2.position.set(8, 0, -5);
+    const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 2.4, 16), legMat);
+    leg2.position.set(7, 0, -4);
     this.group.add(leg2);
 
-    // 2. Realistic Desktop Monitor
+    // 2. Realistic 27" Desktop Monitor
     const monitorGroup = new THREE.Group();
-    monitorGroup.position.set(-3, 1.8, 0);
+    monitorGroup.position.set(-2.5, 1.45, 0);
 
-    // Stand Base & Arm
+    // Monitor Stand Base & Arm
     const standBase = new THREE.Mesh(
-      new THREE.CylinderGeometry(2, 2.4, 0.3, 16),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.2 })
+      new THREE.CylinderGeometry(1.6, 1.8, 0.2, 24),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.95, roughness: 0.1 })
     );
-    standBase.position.y = 0.15;
+    standBase.position.y = 0.1;
     monitorGroup.add(standBase);
 
     const standPole = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.3, 0.3, 2.8, 16),
-      new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 })
+      new THREE.CylinderGeometry(0.2, 0.25, 2.4, 16),
+      new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9 })
     );
-    standPole.position.set(0, 1.6, -0.4);
+    standPole.position.set(0, 1.3, -0.3);
     monitorGroup.add(standPole);
 
-    // Screen bezel (Matte Dark Slate)
+    // Monitor Bezel Frame
     const bezel = new THREE.Mesh(
-      new THREE.BoxGeometry(8, 5.6, 0.4),
-      new THREE.MeshStandardMaterial({ color: 0x090d16, metalness: 0.8, roughness: 0.2 })
+      new THREE.BoxGeometry(6.4, 4.4, 0.3),
+      new THREE.MeshStandardMaterial({ color: 0x070b14, metalness: 0.85, roughness: 0.2 })
     );
-    bezel.position.set(0, 4.4, 0);
+    bezel.position.set(0, 3.6, 0);
     monitorGroup.add(bezel);
 
-    // Live Dynamic Canvas Screen
+    // Monitor Screen Canvas
     this.screenCanvas = document.createElement('canvas');
     this.screenCanvas.width = 512;
     this.screenCanvas.height = 360;
@@ -123,57 +120,76 @@ export class LayerUserSpace {
     this.screenTexture = new THREE.CanvasTexture(this.screenCanvas);
 
     const screenMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(7.4, 5.0),
+      new THREE.PlaneGeometry(6.0, 4.0),
       new THREE.MeshBasicMaterial({ map: this.screenTexture })
     );
-    screenMesh.position.set(0, 4.4, 0.21);
+    screenMesh.position.set(0, 3.6, 0.16);
     monitorGroup.add(screenMesh);
 
     this.group.add(monitorGroup);
     this.nodes['terminal'] = bezel;
 
-    // 3. Realistic Keyboard
-    const keyboard = new THREE.Mesh(
-      new THREE.BoxGeometry(6.5, 0.3, 2.4),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.6, roughness: 0.4 })
+    // 3. Mechanical Keyboard on Desk
+    const kbBase = new THREE.Mesh(
+      new THREE.BoxGeometry(5.2, 0.25, 2.0),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.7, roughness: 0.3 })
     );
-    keyboard.position.set(-3, 1.95, 3.5);
-    keyboard.rotation.x = 0.05;
-    this.group.add(keyboard);
+    kbBase.position.set(-2.5, 1.55, 2.8);
+    this.group.add(kbBase);
 
-    // Keyboard RGB backplate glow
-    const rgbPlate = new THREE.Mesh(
-      new THREE.PlaneGeometry(6.3, 2.2),
-      new THREE.MeshBasicMaterial({ color: 0x00f3ff, transparent: true, opacity: 0.4 })
+    // Keyboard RGB backplate
+    const kbRgb = new THREE.Mesh(
+      new THREE.PlaneGeometry(5.0, 1.8),
+      new THREE.MeshBasicMaterial({ color: 0x00f3ff, transparent: true, opacity: 0.45 })
     );
-    rgbPlate.rotation.x = -Math.PI / 2;
-    rgbPlate.position.set(-3, 2.12, 3.5);
-    this.group.add(rgbPlate);
+    kbRgb.rotation.x = -Math.PI / 2;
+    kbRgb.position.set(-2.5, 1.69, 2.8);
+    this.group.add(kbRgb);
 
-    // 4. Desktop Computer PC Tower (Shell & $PATH Station)
-    const pcTower = new THREE.Mesh(
-      new THREE.BoxGeometry(4.2, 7, 6.8),
+    // 4. Gaming PC Desktop Tower (Shell / $PATH Station)
+    const pcGroup = new THREE.Group();
+    pcGroup.position.set(5.0, 1.45, 0);
+
+    // Main Chassis
+    const towerMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(3.4, 5.8, 5.4),
       new THREE.MeshStandardMaterial({
-        color: 0x0b1324,
+        color: 0x070d1a,
+        metalness: 0.9,
+        roughness: 0.15,
         emissive: 0x00f3ff,
-        emissiveIntensity: 0.15,
-        metalness: 0.85,
-        roughness: 0.2
+        emissiveIntensity: 0.1
       })
     );
-    pcTower.position.set(6, 4.8, 0);
-    this.group.add(pcTower);
+    towerMesh.position.y = 2.9;
+    pcGroup.add(towerMesh);
 
-    // Glowing front LED strip
-    const ledStrip = new THREE.Mesh(
-      new THREE.BoxGeometry(0.15, 5.8, 0.15),
+    // Tempered Glass Side Window
+    const glassMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(5.0, 5.4),
+      new THREE.MeshStandardMaterial({
+        color: 0x00f3ff,
+        metalness: 0.9,
+        roughness: 0.1,
+        transparent: true,
+        opacity: 0.35
+      })
+    );
+    glassMesh.rotation.y = -Math.PI / 2;
+    glassMesh.position.set(-1.72, 2.9, 0);
+    pcGroup.add(glassMesh);
+
+    // Front RGB Accent Strip
+    const frontRgb = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 5.0, 0.1),
       new THREE.MeshBasicMaterial({ color: 0x00ff88 })
     );
-    ledStrip.position.set(-2.11, 0, 3.3);
-    pcTower.add(ledStrip);
+    frontRgb.position.set(-1.6, 2.9, 2.6);
+    pcGroup.add(frontRgb);
 
-    this.nodes['lexer'] = pcTower;
-    this.nodes['path'] = pcTower;
+    this.group.add(pcGroup);
+    this.nodes['lexer'] = towerMesh;
+    this.nodes['path'] = towerMesh;
 
     this.sceneManager.registerInteractiveObject(bezel, {
       id: 'terminal',
@@ -183,7 +199,7 @@ export class LayerUserSpace {
       details: 'Applications like GNOME Terminal, Alacritty, or VS Code write raw keyboard bytes into the pseudoterminal master device (/dev/ptmx).'
     });
 
-    this.sceneManager.registerInteractiveObject(pcTower, {
+    this.sceneManager.registerInteractiveObject(towerMesh, {
       id: 'lexer',
       title: '🐚 Shell Parser & $PATH Finder',
       layer: 'User Space (Bash/Zsh)',
@@ -191,7 +207,7 @@ export class LayerUserSpace {
       details: 'Bash tokenizes the command into arguments, evaluates variables ($HOME), and checks if the command exists on disk.'
     });
 
-    // Initialize screen
+    // Initialize screen content
     this.updateMonitorScreen('ls -la', ['drwxr-xr-x 5 user user 4096 Aug 28 src', '-rw-r--r-- 1 user user  320 package.json', 'user@linux:~$ ']);
   }
 
@@ -199,48 +215,47 @@ export class LayerUserSpace {
     const ctx = this.screenCtx;
     if (!ctx) return;
 
-    // Background
     ctx.fillStyle = '#050a14';
     ctx.fillRect(0, 0, 512, 360);
 
-    // Terminal top header bar
+    // Window header
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(0, 0, 512, 36);
+    ctx.fillRect(0, 0, 512, 34);
 
     // Window control buttons
     ctx.fillStyle = '#ef4444';
-    ctx.beginPath(); ctx.arc(18, 18, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(16, 17, 5, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#eab308';
-    ctx.beginPath(); ctx.arc(36, 18, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(32, 17, 5, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#22c55e';
-    ctx.beginPath(); ctx.arc(54, 18, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(48, 17, 5, 0, Math.PI * 2); ctx.fill();
 
-    ctx.font = 'bold 14px monospace';
+    ctx.font = 'bold 13px monospace';
     ctx.fillStyle = '#94a3b8';
-    ctx.fillText('bash — 3D Computer Terminal', 80, 23);
+    ctx.fillText('bash — 3D Computer Terminal', 70, 22);
 
-    // Prompt & Typed Command
-    ctx.font = 'bold 16px monospace';
+    // Prompt line
+    ctx.font = 'bold 15px monospace';
     ctx.fillStyle = '#22c55e';
-    ctx.fillText('user@linux:~$ ', 20, 72);
+    ctx.fillText('user@linux:~$ ', 18, 68);
 
     ctx.fillStyle = '#00f3ff';
-    ctx.fillText(cmdText || 'ls -la', 150, 72);
+    ctx.fillText(cmdText || 'ls -la', 142, 68);
 
     // Active status line
     if (activeStep) {
       ctx.fillStyle = '#fbbf24';
-      ctx.font = 'bold 13px monospace';
-      ctx.fillText(`⚡ Status: ${activeStep}`, 20, 105);
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText(`⚡ Status: ${activeStep}`, 18, 98);
     }
 
     // Terminal Outputs
-    ctx.font = '13px monospace';
+    ctx.font = '12.5px monospace';
     ctx.fillStyle = '#cbd5e1';
-    let y = activeStep ? 135 : 110;
+    let y = activeStep ? 126 : 102;
     for (let i = 0; i < Math.min(8, outputLines.length); i++) {
-      ctx.fillText(outputLines[i], 20, y);
-      y += 24;
+      ctx.fillText(outputLines[i], 18, y);
+      y += 22;
     }
 
     this.screenTexture.needsUpdate = true;
@@ -251,15 +266,15 @@ export class LayerUserSpace {
     if (!node) return;
 
     if (active) {
-      node.scale.set(1.1, 1.1, 1.1);
+      node.scale.set(1.08, 1.08, 1.08);
       if (node.material && node.material.emissive) {
         node.material.emissive.setHex(colorHex);
-        node.material.emissiveIntensity = 0.95;
+        node.material.emissiveIntensity = 0.9;
       }
     } else {
       node.scale.set(1, 1, 1);
       if (node.material && node.material.emissive) {
-        node.material.emissiveIntensity = 0.15;
+        node.material.emissiveIntensity = 0.1;
       }
     }
   }
