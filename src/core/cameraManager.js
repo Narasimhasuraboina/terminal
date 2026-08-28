@@ -50,62 +50,62 @@ export class CameraManager {
       }
     };
 
-    // Node Views (Dramatic Cinematic Framing)
+    // Node Views (Comfortable, Complete Framing so Labels & Hardware Never Get Cut Off)
     this.nodeZoomViews = {
       terminal: {
-        pos: new THREE.Vector3(-38, 13, 24),
-        target: new THREE.Vector3(-38, 4.2, 10)
+        pos: new THREE.Vector3(-36, 18, 42),
+        target: new THREE.Vector3(-36, 3.8, 10)
       },
       lexer: {
-        pos: new THREE.Vector3(-28, 13, 20),
-        target: new THREE.Vector3(-30.5, 4.0, 10)
+        pos: new THREE.Vector3(-30, 18, 40),
+        target: new THREE.Vector3(-30.5, 3.8, 10)
       },
       path: {
-        pos: new THREE.Vector3(-28, 13, 20),
-        target: new THREE.Vector3(-30.5, 4.0, 10)
+        pos: new THREE.Vector3(-30, 18, 40),
+        target: new THREE.Vector3(-30.5, 3.8, 10)
       },
       fork: {
-        pos: new THREE.Vector3(-14, 11, 18),
+        pos: new THREE.Vector3(-14, 16, 32),
         target: new THREE.Vector3(-14, 3.2, 4.5)
       },
       syscall_dispatcher: {
-        pos: new THREE.Vector3(-10, 11, 17),
-        target: new THREE.Vector3(-10, 4.5, 0)
+        pos: new THREE.Vector3(-10, 17, 30),
+        target: new THREE.Vector3(-10, 4.0, 0)
       },
       execve: {
-        pos: new THREE.Vector3(-5, 11, 18),
+        pos: new THREE.Vector3(-5, 16, 32),
         target: new THREE.Vector3(-5, 3.2, 4.5)
       },
       fd_table: {
-        pos: new THREE.Vector3(-10, 11, 17),
-        target: new THREE.Vector3(-10, 4.5, 0)
+        pos: new THREE.Vector3(-10, 17, 30),
+        target: new THREE.Vector3(-10, 4.0, 0)
       },
       cpu_core: {
-        pos: new THREE.Vector3(8.5, 12, 13),
+        pos: new THREE.Vector3(9.5, 18, 25),
         target: new THREE.Vector3(10.5, 3.2, -1)
       },
       scheduler: {
-        pos: new THREE.Vector3(8.5, 12, 13),
+        pos: new THREE.Vector3(9.5, 18, 25),
         target: new THREE.Vector3(10.5, 3.2, -1)
       },
       mmu_memory: {
-        pos: new THREE.Vector3(20, 12, 13),
+        pos: new THREE.Vector3(21.5, 18, 25),
         target: new THREE.Vector3(21.5, 3.2, -1)
       },
       vfs_tree: {
-        pos: new THREE.Vector3(35, 11, 22),
+        pos: new THREE.Vector3(36, 18, 34),
         target: new THREE.Vector3(36, 3.0, 11)
       },
       page_cache: {
-        pos: new THREE.Vector3(35, 11, 22),
+        pos: new THREE.Vector3(36, 18, 34),
         target: new THREE.Vector3(36, 3.0, 11)
       },
       storage_disk: {
-        pos: new THREE.Vector3(44, 12, 22),
+        pos: new THREE.Vector3(45.5, 18, 34),
         target: new THREE.Vector3(45.5, 3.0, 11)
       },
       disk: {
-        pos: new THREE.Vector3(44, 12, 22),
+        pos: new THREE.Vector3(45.5, 18, 34),
         target: new THREE.Vector3(45.5, 3.0, 11)
       }
     };

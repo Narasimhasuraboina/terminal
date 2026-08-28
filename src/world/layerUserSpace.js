@@ -94,10 +94,10 @@ export class LayerUserSpace {
     pwrLed.position.set(3.2, 1.35, 0.15);
     monitorGroup.add(pwrLed);
 
-    // Dynamic Live Monospace Screen Face
+    // Dynamic Live High-Resolution Monospace Screen Face (1024x680 Retina)
     this.screenCanvas = document.createElement('canvas');
-    this.screenCanvas.width = 512;
-    this.screenCanvas.height = 340;
+    this.screenCanvas.width = 1024;
+    this.screenCanvas.height = 680;
     this.screenCtx = this.screenCanvas.getContext('2d');
     this.screenTexture = new THREE.CanvasTexture(this.screenCanvas);
 
@@ -251,67 +251,68 @@ export class LayerUserSpace {
     const ctx = this.screenCtx;
     if (!ctx) return;
 
-    ctx.fillStyle = '#050a14';
-    ctx.fillRect(0, 0, 512, 340);
+    // High-Resolution 1024x680 Screen Buffer
+    ctx.fillStyle = '#040711';
+    ctx.fillRect(0, 0, 1024, 680);
 
-    // Window header
+    // Window Title Bar
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(0, 0, 512, 32);
+    ctx.fillRect(0, 0, 1024, 56);
 
-    // Window buttons
+    // Window traffic lights
     ctx.fillStyle = '#ef4444';
-    ctx.beginPath(); ctx.arc(16, 16, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(30, 28, 9, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#eab308';
-    ctx.beginPath(); ctx.arc(32, 16, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(60, 28, 9, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#22c55e';
-    ctx.beginPath(); ctx.arc(48, 16, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(90, 28, 9, 0, Math.PI * 2); ctx.fill();
 
-    ctx.font = 'bold 13px monospace';
+    ctx.font = 'bold 22px monospace';
     ctx.fillStyle = '#94a3b8';
-    ctx.fillText('bash — 3D Computer Terminal', 70, 21);
+    ctx.fillText('bash — 3D Linux Terminal Emulator', 130, 36);
 
-    // Prompt & Typed Command
-    ctx.font = 'bold 15px monospace';
+    // Active Command Prompt
+    ctx.font = 'bold 28px monospace';
     ctx.fillStyle = '#22c55e';
-    ctx.fillText('user@linux:~$ ', 18, 60);
+    ctx.fillText('user@linux:~$ ', 36, 110);
 
     ctx.fillStyle = '#00f3ff';
-    ctx.fillText(cmdText || 'ls -la', 142, 60);
+    ctx.fillText(cmdText || 'ls -la', 280, 110);
 
-    // Active status line
+    // Active Status Headline
     if (activeStep) {
       ctx.fillStyle = '#fbbf24';
-      ctx.font = 'bold 12px monospace';
-      ctx.fillText(`⚡ Status: ${activeStep}`, 18, 86);
+      ctx.font = 'bold 24px monospace';
+      ctx.fillText(`⚡ Status: ${activeStep}`, 36, 160);
     }
 
-    // Why at this point box on 3D Monitor
+    // Why at this point Callout Box on 3D Monitor
     if (whyReason) {
-      ctx.fillStyle = 'rgba(14, 165, 233, 0.2)';
-      ctx.strokeStyle = 'rgba(14, 165, 233, 0.6)';
-      ctx.lineWidth = 1.5;
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.18)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.roundRect(14, 98, 484, 52, 6);
+      ctx.roundRect(32, 190, 960, 110, 12);
       ctx.fill();
       ctx.stroke();
 
       ctx.fillStyle = '#38bdf8';
-      ctx.font = 'bold 11px monospace';
-      ctx.fillText('❓ WHY AT THIS HARDWARE POINT:', 22, 114);
+      ctx.font = 'bold 22px monospace';
+      ctx.fillText('❓ WHY AT THIS HARDWARE POINT:', 50, 230);
 
-      ctx.fillStyle = '#e0f2fe';
-      ctx.font = '10.5px sans-serif';
-      const cleanReason = whyReason.length > 70 ? whyReason.substring(0, 68) + '...' : whyReason;
-      ctx.fillText(cleanReason, 22, 134);
+      ctx.fillStyle = '#f0f9ff';
+      ctx.font = '20px sans-serif';
+      const cleanReason = whyReason.length > 80 ? whyReason.substring(0, 78) + '...' : whyReason;
+      ctx.fillText(cleanReason, 50, 272);
     }
 
-    // Terminal Outputs
-    ctx.font = '11px monospace';
-    ctx.fillStyle = '#94a3b8';
-    let y = whyReason ? 172 : (activeStep ? 112 : 90);
-    for (let i = 0; i < Math.min(5, outputLines.length); i++) {
-      ctx.fillText(outputLines[i], 18, y);
-      y += 20;
+    // Output Lines
+    ctx.font = '22px monospace';
+    ctx.fillStyle = '#cbd5e1';
+    let y = whyReason ? 345 : (activeStep ? 220 : 170);
+    for (let i = 0; i < Math.min(6, outputLines.length); i++) {
+      ctx.fillText(outputLines[i], 36, y);
+      y += 38;
     }
 
     this.screenTexture.needsUpdate = true;

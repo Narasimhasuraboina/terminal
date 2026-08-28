@@ -12,54 +12,54 @@ export class DataHighways {
   }
 
   initNamedPoints() {
-    // World coordinates of our 3D components
+    // World coordinates of our 3D components (Calibrated to hardware level)
     this.points = {
-      terminal: new THREE.Vector3(-42, 4, 13),
-      lexer: new THREE.Vector3(-36, 4, 6),
-      path: new THREE.Vector3(-30, 4, 13),
+      terminal: new THREE.Vector3(-38.5, 1.5, 12),
+      lexer: new THREE.Vector3(-31, 1.5, 8),
+      path: new THREE.Vector3(-31, 1.5, 12),
 
-      fork: new THREE.Vector3(-15, 3.5, 6),
-      syscall: new THREE.Vector3(-10, 5, 0),
-      execve: new THREE.Vector3(-5, 3.5, 6),
-      fd_table: new THREE.Vector3(-10, 3, -6),
+      fork: new THREE.Vector3(-14, 2.0, 4.5),
+      syscall: new THREE.Vector3(-10, 3.5, 0),
+      execve: new THREE.Vector3(-5, 2.0, 4.5),
+      fd_table: new THREE.Vector3(-10, 2.0, -4),
 
-      cpu: new THREE.Vector3(10, 4.5, -1),
-      mmu: new THREE.Vector3(21.5, 4.5, -1),
-      scheduler: new THREE.Vector3(16, 4.5, -9),
+      cpu: new THREE.Vector3(10.5, 2.5, 1.5),
+      mmu: new THREE.Vector3(21.5, 2.5, 1.5),
+      scheduler: new THREE.Vector3(10.5, 2.5, -3),
 
-      vfs: new THREE.Vector3(36, 3.5, 12),
-      page_cache: new THREE.Vector3(42, 3.5, 6),
-      disk: new THREE.Vector3(48, 3.5, 12)
+      vfs: new THREE.Vector3(36, 2.0, 11.5),
+      page_cache: new THREE.Vector3(40, 2.0, 7),
+      disk: new THREE.Vector3(45.5, 2.0, 11.5)
     };
   }
 
   buildHighways() {
-    // Define the primary data conduit routes
+    // Define clean, non-obstructing data conduit routes
     const routes = [
-      // User Space internal
-      { from: 'terminal', to: 'lexer', color: 0x00f3ff, midOffset: new THREE.Vector3(0, 2, 0) },
-      { from: 'lexer', to: 'path', color: 0x00f3ff, midOffset: new THREE.Vector3(0, 2, 0) },
+      // User Space internal (Runs neatly along desk)
+      { from: 'terminal', to: 'lexer', color: 0x00f3ff, midOffset: new THREE.Vector3(0, 0.8, 0) },
+      { from: 'lexer', to: 'path', color: 0x00f3ff, midOffset: new THREE.Vector3(0, 0.8, 0) },
 
       // Shell -> Syscall boundary
-      { from: 'path', to: 'fork', color: 0xff0077, midOffset: new THREE.Vector3(-5, 4, -2) },
-      { from: 'fork', to: 'syscall', color: 0xff0077, midOffset: new THREE.Vector3(0, 2, 0) },
-      { from: 'syscall', to: 'execve', color: 0xff0077, midOffset: new THREE.Vector3(0, 2, 0) },
+      { from: 'path', to: 'fork', color: 0xff0077, midOffset: new THREE.Vector3(-4, 1.5, -2) },
+      { from: 'fork', to: 'syscall', color: 0xff0077, midOffset: new THREE.Vector3(0, 1.2, 0) },
+      { from: 'syscall', to: 'execve', color: 0xff0077, midOffset: new THREE.Vector3(0, 1.2, 0) },
 
       // Syscall -> Kernel Core / Memory
-      { from: 'execve', to: 'mmu', color: 0x2979ff, midOffset: new THREE.Vector3(8, 6, -3) },
-      { from: 'syscall', to: 'cpu', color: 0x2979ff, midOffset: new THREE.Vector3(0, 4, 0) },
-      { from: 'mmu', to: 'cpu', color: 0x2979ff, midOffset: new THREE.Vector3(0, 2, 0) },
-      { from: 'cpu', to: 'scheduler', color: 0xffaa00, midOffset: new THREE.Vector3(0, 2, 0) },
+      { from: 'execve', to: 'mmu', color: 0x2979ff, midOffset: new THREE.Vector3(6, 2.5, -2) },
+      { from: 'syscall', to: 'cpu', color: 0x2979ff, midOffset: new THREE.Vector3(0, 2.0, 0) },
+      { from: 'mmu', to: 'cpu', color: 0x2979ff, midOffset: new THREE.Vector3(0, 1.2, 0) },
+      { from: 'cpu', to: 'scheduler', color: 0xffaa00, midOffset: new THREE.Vector3(0, 1.0, 0) },
 
       // Kernel -> VFS Storage
-      { from: 'cpu', to: 'vfs', color: 0x00ff88, midOffset: new THREE.Vector3(15, 6, 8) },
-      { from: 'vfs', to: 'page_cache', color: 0x00ff88, midOffset: new THREE.Vector3(0, 2, 0) },
-      { from: 'page_cache', to: 'disk', color: 0x00ff88, midOffset: new THREE.Vector3(0, 2, 0) },
+      { from: 'cpu', to: 'vfs', color: 0x00ff88, midOffset: new THREE.Vector3(12, 2.5, 4) },
+      { from: 'vfs', to: 'page_cache', color: 0x00ff88, midOffset: new THREE.Vector3(0, 1.0, 0) },
+      { from: 'page_cache', to: 'disk', color: 0x00ff88, midOffset: new THREE.Vector3(0, 1.0, 0) },
 
-      // Return Stream: Disk/VFS -> CPU -> File Descriptors -> Terminal
-      { from: 'disk', to: 'cpu', color: 0x00f3ff, midOffset: new THREE.Vector3(25, 8, -5) },
-      { from: 'cpu', to: 'fd_table', color: 0x00f3ff, midOffset: new THREE.Vector3(0, 4, -5) },
-      { from: 'fd_table', to: 'terminal', color: 0x00f3ff, midOffset: new THREE.Vector3(-25, 6, 0) }
+      // Return Stream: Disk/VFS -> CPU -> File Descriptors -> Terminal (Routes around back)
+      { from: 'disk', to: 'cpu', color: 0x00f3ff, midOffset: new THREE.Vector3(18, 3.5, -3) },
+      { from: 'cpu', to: 'fd_table', color: 0x00f3ff, midOffset: new THREE.Vector3(0, 2.0, -3) },
+      { from: 'fd_table', to: 'terminal', color: 0x00f3ff, midOffset: new THREE.Vector3(-18, 2.0, -3) }
     ];
 
     routes.forEach(r => {
