@@ -11,26 +11,14 @@ export class WaypointBeacon {
   }
 
   buildBeaconMesh() {
-    // 1. Subtle Semi-Transparent Light Guide Beam
-    const beamGeo = new THREE.CylinderGeometry(0.08, 0.18, 4.8, 16);
-    const beamMat = new THREE.MeshBasicMaterial({
-      color: 0x00f3ff,
-      transparent: true,
-      opacity: 0.35,
-      blending: THREE.AdditiveBlending
-    });
-    this.beam = new THREE.Mesh(beamGeo, beamMat);
-    this.beam.position.y = 2.4;
-    this.group.add(this.beam);
-
-    // 2. Concentric Ground Rings
+    // 1. Concentric Ground Target Rings (Highlights active station without blocking hardware)
     this.rings = [];
     for (let i = 0; i < 3; i++) {
-      const ringGeo = new THREE.RingGeometry(0.6 + i * 0.7, 0.85 + i * 0.7, 32);
+      const ringGeo = new THREE.RingGeometry(1.0 + i * 0.9, 1.3 + i * 0.9, 32);
       const ringMat = new THREE.MeshBasicMaterial({
         color: 0x00f3ff,
         transparent: true,
-        opacity: 0.8 - i * 0.25,
+        opacity: 0.75 - i * 0.22,
         side: THREE.DoubleSide,
         blending: THREE.AdditiveBlending
       });
@@ -41,30 +29,17 @@ export class WaypointBeacon {
       this.rings.push(ring);
     }
 
-    // 3. Floating 3D Diamond Pin (Compact height at y = 4.8)
-    const pinGeo = new THREE.OctahedronGeometry(0.7);
-    const pinMat = new THREE.MeshStandardMaterial({
-      color: 0x00f3ff,
-      emissive: 0x00f3ff,
-      emissiveIntensity: 0.9,
-      metalness: 0.9,
-      roughness: 0.1
-    });
-    this.pin = new THREE.Mesh(pinGeo, pinMat);
-    this.pin.position.y = 4.8;
-    this.group.add(this.pin);
-
-    // 4. Floating Stage Label Tag (Positioned right above pin at y = 6.2)
+    // 2. High-Contrast Floating Stage Label Tag (Floats in open air at y = 8.5)
     this.canvas = document.createElement('canvas');
     this.canvas.width = 512;
     this.canvas.height = 128;
     this.ctx = this.canvas.getContext('2d');
 
     this.texture = new THREE.CanvasTexture(this.canvas);
-    const spriteMat = new THREE.SpriteMaterial({ map: this.texture, transparent: true });
+    const spriteMat = new THREE.SpriteMaterial({ map: this.texture, transparent: true, depthTest: false });
     this.labelSprite = new THREE.Sprite(spriteMat);
-    this.labelSprite.position.set(0, 6.2, 0);
-    this.labelSprite.scale.set(6.4, 1.6, 1);
+    this.labelSprite.position.set(0, 8.5, 0);
+    this.labelSprite.scale.set(6.8, 1.7, 1);
     this.group.add(this.labelSprite);
 
     this.updateLabel('1. User Terminal', false);
@@ -74,7 +49,7 @@ export class WaypointBeacon {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, 512, 128);
 
-    // High-Contrast Cyber Badge
+    // High-Contrast Cyber Tag
     ctx.fillStyle = 'rgba(6, 12, 28, 0.95)';
     ctx.beginPath();
     ctx.roundRect(8, 8, 496, 112, 20);
@@ -92,12 +67,7 @@ export class WaypointBeacon {
 
     this.texture.needsUpdate = true;
 
-    if (this.pin) {
-      this.pin.material.color.setHex(isError ? 0xff0055 : 0x00f3ff);
-      this.pin.material.emissive.setHex(isError ? 0xff0055 : 0x00f3ff);
-      this.beam.material.color.setHex(isError ? 0xff0055 : 0x00f3ff);
-      this.rings.forEach(r => r.material.color.setHex(isError ? 0xff0055 : 0x00f3ff));
-    }
+    this.rings.forEach(r => r.material.color.setHex(isError ? 0xff0055 : 0x00f3ff));
   }
 
   moveTo(targetPos, duration = 800) {
@@ -112,12 +82,8 @@ export class WaypointBeacon {
   }
 
   update(delta) {
-    if (this.pin) {
-      this.pin.rotation.y += delta * 2;
-      this.pin.position.y = 4.8 + Math.sin(Date.now() * 0.004) * 0.25;
-    }
     if (this.labelSprite) {
-      this.labelSprite.position.y = 6.2 + Math.sin(Date.now() * 0.004) * 0.25;
+      this.labelSprite.position.y = 8.5 + Math.sin(Date.now() * 0.003) * 0.2;
     }
     this.rings.forEach((ring, idx) => {
       const scale = (Date.now() * 0.0015 + idx * 0.33) % 1;
