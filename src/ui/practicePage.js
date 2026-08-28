@@ -132,15 +132,13 @@ export class PracticePage {
               <!-- Terminal Output Stream -->
               <div class="p-term-body" id="p-term-output">
                 <div class="p-term-welcome-msg">
-                  <pre class="ascii-banner">
-  _      _____ _   _ _    ___  __  _____ _____ ___ __  __ ___ _  _   _   _    
- | |    |_   _| \ | | |  | \ \/ / |_   _| ____| _ \  \/  |_ _| \| | /_\ | |   
- | |__    | | |  \| | |__| |>  <    | | |  _| |   / |\/| || || .\` |/ _ \| |__ 
- |____|  _|_|_|_|\__|\____/_/\_\   _|_|_|_____|_|_\_|  |_|___|_|\_/_/ \_\____|
-                  </pre>
-                  <p>Welcome to your dedicated <strong>Linux Command Practice Arena</strong>!</p>
-                  <p>Select any mission on the left, type the command below, and press <strong>Enter</strong> to practice in real time.</p>
-                  <p>✨ <em>Supports real directory creation, piping (<code>|</code>), redirection (<code>></code>), and Tab autocompletion.</em></p>
+                  <div class="p-term-system-info">
+                    <span class="sys-badge">Ubuntu 24.04 LTS</span>
+                    <span class="sys-badge">Linux 6.8.0-45 x86_64</span>
+                    <span class="sys-badge">bash 5.2.21</span>
+                  </div>
+                  <p class="p-welcome-lead">Interactive in-memory Linux subsystem active. Select any mission on the left or type any command to practice.</p>
+                  <p class="p-welcome-sub">💡 <em>Supports real directory creation, file I/O, piping (<code>|</code>), redirection (<code>></code>), and Tab autocompletion.</em></p>
                 </div>
               </div>
 
