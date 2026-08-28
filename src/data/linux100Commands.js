@@ -1431,11 +1431,20 @@ export const BASE_100_COMMANDS = [
   }
 ];
 
-// Unified Master List of 600 Practice Commands
-export const LINUX_100_COMMANDS = [
+// Unified Master List of 1,000 Practice Commands
+import { LINUX_400_ADDITIONAL_COMMANDS } from './linux400Commands.js';
+
+const RAW_1000_COMMANDS = [
   ...BASE_100_COMMANDS,
-  ...LINUX_500_ADDITIONAL_COMMANDS
+  ...LINUX_500_ADDITIONAL_COMMANDS,
+  ...LINUX_400_ADDITIONAL_COMMANDS
 ];
+
+// Ensure all 1,000 commands have clear real-world use cases
+export const LINUX_100_COMMANDS = RAW_1000_COMMANDS.map(c => ({
+  ...c,
+  useCase: c.useCase || `Use in daily operations when you need to run '${c.command}' to solve real system administration, networking, or developer challenges.`
+}));
 
 export const CATEGORIES = [
   { id: 'all', name: `🌟 All Commands (${LINUX_100_COMMANDS.length})`, icon: '🌟' },

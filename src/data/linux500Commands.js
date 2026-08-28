@@ -156,6 +156,7 @@ for (let round = 1; round <= 10; round++) {
         categoryName: dom.categoryName,
         name: t.name + (round > 1 ? ` [Var ${round}]` : ''),
         title: `${t.title}${suffix}`,
+        useCase: t.useCase || `Use in production environments when you need to run '${t.cmd}' to inspect or automate system state safely.`,
         mission: `${t.mission} (Practice exercise set ${round})`,
         hint: t.hint,
         command: t.cmd,

@@ -332,11 +332,20 @@ export class PracticePage {
         <h2 class="p-card-title">${cmd.title}</h2>
       </div>
 
+      <!-- REAL-WORLD USE CASE BOX (WHY WE USE THIS) -->
+      <div class="p-usecase-box">
+        <div class="p-usecase-header">
+          <span class="p-usecase-icon">💡</span>
+          <span class="p-usecase-badge">REAL-WORLD USE CASE (WHY WE USE THIS)</span>
+        </div>
+        <p class="p-usecase-text">${cmd.useCase || cmd.mission}</p>
+      </div>
+
       <!-- STEP-BY-STEP INSTRUCTIONS -->
       <div class="p-instructions-box">
         <div class="p-instructions-header">
           <span class="p-instructions-badge">📝 INSTRUCTIONS & WORKFLOW</span>
-          <span class="p-instructions-scenario">Scenario: Real-world System Administration</span>
+          <span class="p-instructions-scenario">Scenario: Real-world Operations</span>
         </div>
         <div class="p-steps-list">
           <div class="p-step-item">
