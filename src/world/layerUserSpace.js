@@ -17,17 +17,17 @@ export class LayerUserSpace {
     // Motherboard PCB Base
     const baseGeo = new THREE.BoxGeometry(24, 1.2, 22);
     const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x071524,
-      metalness: 0.8,
-      roughness: 0.2,
-      emissive: 0x003366,
+      color: 0x081326,
+      metalness: 0.85,
+      roughness: 0.25,
+      emissive: 0x002244,
       emissiveIntensity: 0.2
     });
     const baseMesh = new THREE.Mesh(baseGeo, baseMat);
     baseMesh.position.y = -0.6;
     this.group.add(baseMesh);
 
-    // Glowing border
+    // Glowing cyan edge line
     const edgeGeo = new THREE.EdgesGeometry(baseGeo);
     const edgeMat = new THREE.LineBasicMaterial({ color: 0x00f3ff, linewidth: 2 });
     const edgeLines = new THREE.LineSegments(edgeGeo, edgeMat);
@@ -35,65 +35,79 @@ export class LayerUserSpace {
     this.group.add(edgeLines);
 
     // Permanent High-Contrast Billboard Label
-    this.createHoloLabel('🖥️ STEP 1: USER TERMINAL & SHELL', new THREE.Vector3(0, 13, -8), 0x00f3ff, '#00f3ff');
+    this.createHoloLabel('🖥️ STEP 1: USER TERMINAL & SHELL', new THREE.Vector3(0, 12, -8), 0x00f3ff, '#00f3ff');
   }
 
   createHoloLabel(text, pos, colorHex, borderHex) {
     const canvas = document.createElement('canvas');
     canvas.width = 600;
-    canvas.height = 130;
+    canvas.height = 120;
     const ctx = canvas.getContext('2d');
 
     ctx.fillStyle = 'rgba(4, 10, 24, 0.92)';
-    ctx.roundRect(10, 10, 580, 110, 18);
+    ctx.roundRect(10, 10, 580, 100, 16);
     ctx.fill();
     ctx.strokeStyle = borderHex;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 4;
     ctx.stroke();
 
-    ctx.font = 'bold 30px system-ui, sans-serif';
+    ctx.font = 'bold 28px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, 300, 65);
+    ctx.fillText(text, 300, 60);
 
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(spriteMat);
     sprite.position.copy(pos);
-    sprite.scale.set(13, 2.8, 1);
+    sprite.scale.set(12, 2.4, 1);
     this.group.add(sprite);
   }
 
   buildHardwareModels() {
-    // 1. Realistic Computer Desk
+    // 1. Workstation Desk
     const deskTop = new THREE.Mesh(
       new THREE.BoxGeometry(18, 0.6, 12),
-      new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8, roughness: 0.2 })
+      new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        metalness: 0.7,
+        roughness: 0.3
+      })
     );
     deskTop.position.set(0, 1.5, 0);
     this.group.add(deskTop);
 
-    // 2. Realistic Desktop Monitor (Live Screen)
+    // Desk Metallic Legs
+    const legMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9, roughness: 0.1 });
+    const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 3, 16), legMat);
+    leg1.position.set(-8, 0, -5);
+    this.group.add(leg1);
+
+    const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 3, 16), legMat);
+    leg2.position.set(8, 0, -5);
+    this.group.add(leg2);
+
+    // 2. Realistic Desktop Monitor
     const monitorGroup = new THREE.Group();
     monitorGroup.position.set(-3, 1.8, 0);
 
-    // Stand
+    // Stand Base & Arm
     const standBase = new THREE.Mesh(
       new THREE.CylinderGeometry(2, 2.4, 0.3, 16),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9 })
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.2 })
     );
     standBase.position.y = 0.15;
     monitorGroup.add(standBase);
 
     const standPole = new THREE.Mesh(
       new THREE.CylinderGeometry(0.3, 0.3, 2.8, 16),
-      new THREE.MeshStandardMaterial({ color: 0x334155 })
+      new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 })
     );
     standPole.position.set(0, 1.6, -0.4);
     monitorGroup.add(standPole);
 
-    // Screen bezel
+    // Screen bezel (Matte Dark Slate)
     const bezel = new THREE.Mesh(
       new THREE.BoxGeometry(8, 5.6, 0.4),
       new THREE.MeshStandardMaterial({ color: 0x090d16, metalness: 0.8, roughness: 0.2 })
@@ -118,7 +132,7 @@ export class LayerUserSpace {
     this.group.add(monitorGroup);
     this.nodes['terminal'] = bezel;
 
-    // 3. Realistic Keyboard on desk
+    // 3. Realistic Keyboard
     const keyboard = new THREE.Mesh(
       new THREE.BoxGeometry(6.5, 0.3, 2.4),
       new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.6, roughness: 0.4 })
@@ -127,14 +141,23 @@ export class LayerUserSpace {
     keyboard.rotation.x = 0.05;
     this.group.add(keyboard);
 
+    // Keyboard RGB backplate glow
+    const rgbPlate = new THREE.Mesh(
+      new THREE.PlaneGeometry(6.3, 2.2),
+      new THREE.MeshBasicMaterial({ color: 0x00f3ff, transparent: true, opacity: 0.4 })
+    );
+    rgbPlate.rotation.x = -Math.PI / 2;
+    rgbPlate.position.set(-3, 2.12, 3.5);
+    this.group.add(rgbPlate);
+
     // 4. Desktop Computer PC Tower (Shell & $PATH Station)
     const pcTower = new THREE.Mesh(
-      new THREE.BoxGeometry(4, 7, 6.5),
+      new THREE.BoxGeometry(4.2, 7, 6.8),
       new THREE.MeshStandardMaterial({
-        color: 0x111c30,
+        color: 0x0b1324,
         emissive: 0x00f3ff,
-        emissiveIntensity: 0.2,
-        metalness: 0.8,
+        emissiveIntensity: 0.15,
+        metalness: 0.85,
         roughness: 0.2
       })
     );
@@ -143,10 +166,10 @@ export class LayerUserSpace {
 
     // Glowing front LED strip
     const ledStrip = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2, 5.6, 0.2),
+      new THREE.BoxGeometry(0.15, 5.8, 0.15),
       new THREE.MeshBasicMaterial({ color: 0x00ff88 })
     );
-    ledStrip.position.set(-2.01, 0, 3.1);
+    ledStrip.position.set(-2.11, 0, 3.3);
     pcTower.add(ledStrip);
 
     this.nodes['lexer'] = pcTower;
@@ -168,7 +191,7 @@ export class LayerUserSpace {
       details: 'Bash tokenizes the command into arguments, evaluates variables ($HOME), and checks if the command exists on disk.'
     });
 
-    // Initialize screen with initial welcome text
+    // Initialize screen
     this.updateMonitorScreen('ls -la', ['drwxr-xr-x 5 user user 4096 Aug 28 src', '-rw-r--r-- 1 user user  320 package.json', 'user@linux:~$ ']);
   }
 
@@ -197,22 +220,17 @@ export class LayerUserSpace {
     ctx.fillText('bash — 3D Computer Terminal', 80, 23);
 
     // Prompt & Typed Command
-    ctx.font = '16px monospace';
+    ctx.font = 'bold 16px monospace';
     ctx.fillStyle = '#22c55e';
-    ctx.fillText('user@linux:~$ ', 20, 70);
+    ctx.fillText('user@linux:~$ ', 20, 72);
 
     ctx.fillStyle = '#00f3ff';
-    ctx.fillText(cmdText || 'ls -la', 150, 70);
-
-    // Cursor
-    const cursorX = 150 + ctx.measureText(cmdText || 'ls -la').width + 2;
-    ctx.fillStyle = '#00f3ff';
-    ctx.fillRect(cursorX, 56, 10, 16);
+    ctx.fillText(cmdText || 'ls -la', 150, 72);
 
     // Active status line
     if (activeStep) {
       ctx.fillStyle = '#fbbf24';
-      ctx.font = '13px monospace';
+      ctx.font = 'bold 13px monospace';
       ctx.fillText(`⚡ Status: ${activeStep}`, 20, 105);
     }
 
@@ -233,7 +251,7 @@ export class LayerUserSpace {
     if (!node) return;
 
     if (active) {
-      node.scale.set(1.15, 1.15, 1.15);
+      node.scale.set(1.1, 1.1, 1.1);
       if (node.material && node.material.emissive) {
         node.material.emissive.setHex(colorHex);
         node.material.emissiveIntensity = 0.95;
@@ -241,7 +259,7 @@ export class LayerUserSpace {
     } else {
       node.scale.set(1, 1, 1);
       if (node.material && node.material.emissive) {
-        node.material.emissiveIntensity = 0.2;
+        node.material.emissiveIntensity = 0.15;
       }
     }
   }
