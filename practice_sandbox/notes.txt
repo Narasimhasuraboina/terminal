@@ -1,0 +1,5 @@
+Linux Operating System Notes:
+- User Space operates in Ring 3 (restricted)
+- Kernel Mode operates in Ring 0 (full hardware access)
+- System Calls (Syscalls) bridge Ring 3 and Ring 0
+- Virtual Memory uses 4-level page table translation
