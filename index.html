@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Linux Terminal Internals — Graphical Subsystem Visualizer</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- 3D Three.js Canvas Container -->
+    <div id="app-viewport"></div>
+
+    <!-- HUD Overlay Top Bar & Bottom Timeline Controls -->
+    <div id="hud-container"></div>
+
+    <!-- Interactive Cyber Terminal Window (Bottom Left) -->
+    <div id="terminal-dock" class="term-dock-container"></div>
+
+    <!-- 2D Architecture Blueprint Circuit Overlay -->
+    <div id="blueprint-container"></div>
+
+    <!-- Holographic Inspector Modal -->
+    <div id="modal-container"></div>
+
+    <!-- How Linux Works Guide Modal -->
+    <div id="guide-container"></div>
+
+    <!-- Linux Internals Quiz Modal -->
+    <div id="quiz-container"></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
