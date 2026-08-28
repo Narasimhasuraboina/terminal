@@ -24,7 +24,7 @@ export class HudOverlay {
           <span class="brand-logo">🐧</span>
           <div class="brand-text">
             <span class="brand-title">HOW LINUX RUNS COMMANDS</span>
-            <span class="brand-sub">Interactive 3D Subsystem Visualizer</span>
+            <span class="brand-sub">Interactive 3D Subsystem Visualizer • By <strong>Narasimha Suraboina</strong> (<a href="https://github.com/Narasimhasuraboina/terminal" target="_blank" rel="noopener noreferrer" class="hud-brand-link">GitHub</a>)</span>
           </div>
         </div>
 
@@ -153,15 +153,6 @@ export class HudOverlay {
             🎥 Follow: ON
           </button>
         </div>
-      </div>
-
-      <!-- 3D HUD BOTTOM FOOTER ATTRIBUTION -->
-      <div class="hud-footer-bar">
-        <span>⚡ Developed by <strong>Narasimha Suraboina</strong></span>
-        <span class="hud-footer-sep">•</span>
-        <a href="https://github.com/Narasimhasuraboina/terminal" target="_blank" rel="noopener noreferrer" class="hud-footer-link">
-          GitHub
-        </a>
       </div>
     `;
   }

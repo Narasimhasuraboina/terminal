@@ -2461,40 +2461,13 @@ body, html {
   border-color: #38bdf8;
 }
 
-/* 3D HUD Bottom Footer Attribution */
-.hud-footer-bar {
-  position: fixed;
-  bottom: 8px;
-  right: 20px;
-  z-index: 100;
-  background: rgba(11, 17, 32, 0.85);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(148, 163, 184, 0.15);
-  padding: 4px 12px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 10.5px;
-  color: #94a3b8;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.hud-footer-bar strong {
-  color: #f1f5f9;
-}
-
-.hud-footer-sep {
-  color: #64748b;
-}
-
-.hud-footer-link {
+.hud-brand-link {
   color: #38bdf8;
   text-decoration: none;
   font-weight: 600;
-  transition: color 0.15s ease;
+  transition: all 0.15s ease;
 }
-.hud-footer-link:hover {
+.hud-brand-link:hover {
   color: #fff;
   text-decoration: underline;
 }
