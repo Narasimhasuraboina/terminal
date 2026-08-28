@@ -18,6 +18,7 @@ import { GuideModal } from './ui/guideModal.js';
 import { BlueprintOverlay } from './ui/blueprintOverlay.js';
 import { QuizMode } from './ui/quizMode.js';
 import { MissionsModal } from './ui/missionsModal.js';
+import { LINUX_100_COMMANDS } from './data/linux100Commands.js';
 import { sound } from './audio/soundFX.js';
 
 class App {
@@ -123,9 +124,6 @@ class App {
     this.timelineRunner.onStageChange = (stage, index, total) => {
       this.hudOverlay.updateStage(stage, index, total);
       this.blueprintOverlay.updateStage(stage, index, total);
-      if (stage.terminalOutput) {
-        this.terminalUI.appendOutput(stage.terminalOutput);
-      }
     };
 
     this.timelineRunner.onPlayStateChange = (isPlaying) => {
@@ -133,14 +131,26 @@ class App {
     };
   }
 
-  executeCommand(cmdText) {
+  executeCommand(cmdText, result = null) {
     const plan = this.commandEngine.getCommandPlan(cmdText);
     if (!plan) return;
 
-    this.terminalUI.appendOutput(`$ ${cmdText}`, true);
     this.hudOverlay.updatePlan(plan);
     this.timelineRunner.loadPlan(plan);
     this.timelineRunner.play();
+
+    // Check if command matches any 100 Missions task
+    if (this.missionsModal) {
+      const trimmed = cmdText.trim();
+      const matched = LINUX_100_COMMANDS.find(c => 
+        c.command.toLowerCase() === trimmed.toLowerCase() ||
+        c.name.toLowerCase() === trimmed.toLowerCase() ||
+        c.name.split(/\s+/)[0].toLowerCase() === trimmed.split(/\s+/)[0].toLowerCase()
+      );
+      if (matched) {
+        this.missionsModal.markMissionDoneById(matched.id);
+      }
+    }
   }
 
   startAnimationLoop() {
