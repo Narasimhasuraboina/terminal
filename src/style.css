@@ -2417,4 +2417,86 @@ body, html {
 .vfs-item.file { color: #94a3b8; }
 .vfs-empty { font-size: 10px; color: #64748b; }
 
+/* Practice Sidebar Footer Attribution */
+.p-sidebar-footer {
+  padding: 10px 14px;
+  background: #0b1120;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.p-footer-dev {
+  color: #94a3b8;
+}
+.p-footer-dev strong {
+  color: #f1f5f9;
+}
+
+.p-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.p-footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #38bdf8;
+  text-decoration: none;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  transition: all 0.15s ease;
+}
+.p-footer-link:hover {
+  background: rgba(56, 189, 248, 0.2);
+  color: #fff;
+  border-color: #38bdf8;
+}
+
+/* 3D HUD Bottom Footer Attribution */
+.hud-footer-bar {
+  position: fixed;
+  bottom: 8px;
+  right: 20px;
+  z-index: 100;
+  background: rgba(11, 17, 32, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  color: #94a3b8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hud-footer-bar strong {
+  color: #f1f5f9;
+}
+
+.hud-footer-sep {
+  color: #64748b;
+}
+
+.hud-footer-link {
+  color: #38bdf8;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+.hud-footer-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
 

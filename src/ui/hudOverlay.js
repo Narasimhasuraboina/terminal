@@ -154,6 +154,15 @@ export class HudOverlay {
           </button>
         </div>
       </div>
+
+      <!-- 3D HUD BOTTOM FOOTER ATTRIBUTION -->
+      <div class="hud-footer-bar">
+        <span>⚡ Developed by <strong>Narasimha Suraboina</strong></span>
+        <span class="hud-footer-sep">•</span>
+        <a href="https://github.com/Narasimhasuraboina/terminal" target="_blank" rel="noopener noreferrer" class="hud-footer-link">
+          GitHub
+        </a>
+      </div>
     `;
   }
 
