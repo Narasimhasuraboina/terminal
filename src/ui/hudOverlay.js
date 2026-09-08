@@ -1,3 +1,9 @@
+/**
+ * @fileoverview HudOverlay - Real-time HUD telemetry displaying FPS, simulation speed,
+ * current architectural stage, and active system call status.
+ * @module ui/hudOverlay
+ */
+
 export class HudOverlay {
   constructor({ domElement, runner, cameraManager, sound, onOpenInspector, onOpenQuiz, onOpenGuide, onToggleBlueprint, onOpenMissions, onOpenPractice }) {
     this.container = domElement;
