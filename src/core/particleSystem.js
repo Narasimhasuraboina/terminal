@@ -1,3 +1,9 @@
+/**
+ * @fileoverview ParticleSystem - Manages GPU particle bursts, photon packets,
+ * and glowing spline animations representing data flow across architectural layers.
+ * @module core/particleSystem
+ */
+
 import * as THREE from 'three';
 
 export class ParticleSystem {
