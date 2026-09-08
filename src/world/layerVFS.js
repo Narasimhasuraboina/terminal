@@ -1,3 +1,9 @@
+/**
+ * @fileoverview LayerVFS - 3D visualization of the Linux Virtual File System,
+ * dentry hierarchy, inode metadata nodes, and NVMe block I/O storage platter.
+ * @module world/layerVFS
+ */
+
 import * as THREE from 'three';
 
 export class LayerVFS {
