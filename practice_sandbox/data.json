@@ -1,0 +1,12 @@
+{
+  "system": "linux-visualizer-node",
+  "kernel": "6.8.0-generic",
+  "nodes": [
+    { "id": "node-1", "role": "ingress", "status": "online", "cpu_percent": 14.2, "mem_mb": 2048 },
+    { "id": "node-2", "role": "worker", "status": "online", "cpu_percent": 48.7, "mem_mb": 8192 },
+    { "id": "node-3", "role": "worker", "status": "online", "cpu_percent": 62.1, "mem_mb": 8192 },
+    { "id": "node-4", "role": "database", "status": "maintenance", "cpu_percent": 5.4, "mem_mb": 16384 }
+  ],
+  "features": ["3d_webgl", "timeline_engine", "vfs_simulation", "procedural_audio"],
+  "healthy": true
+}
