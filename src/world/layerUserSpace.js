@@ -292,7 +292,11 @@ export class LayerUserSpace {
       ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.roundRect(32, 190, 960, 110, 12);
+      if (typeof ctx.roundRect === 'function') {
+        ctx.roundRect(32, 190, 960, 110, 12);
+      } else {
+        ctx.rect(32, 190, 960, 110);
+      }
       ctx.fill();
       ctx.stroke();
 

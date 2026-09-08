@@ -240,6 +240,22 @@ export class PracticePage {
       this.updateVFSExplorer();
     });
 
+    // Missions list delegated click
+    const listEl = this.container.querySelector('#p-missions-list');
+    if (listEl) {
+      listEl.addEventListener('click', (e) => {
+        const item = e.target.closest('.p-mission-item');
+        if (item) {
+          const idx = parseInt(item.getAttribute('data-idx'));
+          if (!isNaN(idx)) {
+            this.currentMissionIndex = idx;
+            this.renderMissionsList();
+            this.renderActiveMission();
+          }
+        }
+      });
+    }
+
     this.renderCategoryPills();
     this.filterMissions();
     this.renderMissionsList();
@@ -284,38 +300,31 @@ export class PracticePage {
 
   renderMissionsList() {
     const listEl = this.container.querySelector('#p-missions-list');
-    listEl.innerHTML = '';
+    if (!listEl) return;
 
     if (this.filteredMissions.length === 0) {
       listEl.innerHTML = `<div class="p-empty-list">No tasks match "${this.searchQuery}"</div>`;
       return;
     }
 
-    this.filteredMissions.forEach((cmd, idx) => {
+    const itemsHtml = this.filteredMissions.map((cmd, idx) => {
       const isCompleted = !!this.completedMissions[cmd.id];
       const isSelected = idx === this.currentMissionIndex;
-
-      const item = document.createElement('div');
-      item.className = `p-mission-item ${isSelected ? 'active' : ''} ${isCompleted ? 'done' : ''}`;
-      item.innerHTML = `
-        <div class="p-item-left">
-          <span class="p-item-num">${idx + 1}</span>
-          <div class="p-item-text">
-            <span class="p-item-title">${cmd.title}</span>
-            <code class="p-item-code">${cmd.command}</code>
+      return `
+        <div class="p-mission-item ${isSelected ? 'active' : ''} ${isCompleted ? 'done' : ''}" data-idx="${idx}">
+          <div class="p-item-left">
+            <span class="p-item-num">${idx + 1}</span>
+            <div class="p-item-text">
+              <span class="p-item-title">${cmd.title}</span>
+              <code class="p-item-code">${cmd.command}</code>
+            </div>
           </div>
+          <span class="p-item-status">${isCompleted ? '✓' : `+${cmd.xp}XP`}</span>
         </div>
-        <span class="p-item-status">${isCompleted ? '✓' : `+${cmd.xp}XP`}</span>
       `;
+    }).join('');
 
-      item.addEventListener('click', () => {
-        this.currentMissionIndex = idx;
-        this.renderMissionsList();
-        this.renderActiveMission();
-      });
-
-      listEl.appendChild(item);
-    });
+    listEl.innerHTML = itemsHtml;
   }
 
   renderActiveMission() {

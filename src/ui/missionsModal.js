@@ -133,6 +133,55 @@ export class MissionsModal {
       searchInput.focus();
     });
 
+    // Delegated click handler for mission cards
+    const grid = this.modalEl.querySelector('#missions-cards-grid');
+    grid.addEventListener('click', (e) => {
+      const copyBtn = e.target.closest('.mission-copy-btn');
+      if (copyBtn) {
+        e.stopPropagation();
+        const cmd = copyBtn.getAttribute('data-cmd');
+        if (cmd) {
+          navigator.clipboard.writeText(cmd);
+          copyBtn.textContent = '✓ Copied!';
+          setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 2000);
+        }
+        return;
+      }
+
+      const run3dBtn = e.target.closest('.run-3d-btn');
+      if (run3dBtn) {
+        const cmdId = run3dBtn.getAttribute('data-id');
+        const cmd = LINUX_100_COMMANDS.find(c => c.id === cmdId);
+        if (cmd) {
+          this.close();
+          this.runCommandIn3D(cmd);
+        }
+        return;
+      }
+
+      const practiceBtn = e.target.closest('.practice-term-btn');
+      if (practiceBtn) {
+        const cmdText = practiceBtn.getAttribute('data-cmd');
+        this.close();
+        const termInput = (this.terminalUI && (this.terminalUI.inputElement || this.terminalUI.inputEl)) || document.querySelector('#term-input');
+        if (termInput) {
+          termInput.value = cmdText;
+          termInput.focus();
+        }
+        return;
+      }
+
+      const toggleDoneBtn = e.target.closest('.toggle-done-btn');
+      if (toggleDoneBtn) {
+        const cmdId = toggleDoneBtn.getAttribute('data-id');
+        const cmd = LINUX_100_COMMANDS.find(c => c.id === cmdId);
+        if (cmd) {
+          this.toggleMissionDone(cmd);
+        }
+        return;
+      }
+    });
+
     this.renderCategoryTabs();
     this.renderCards();
     this.updateStats();
@@ -199,87 +248,56 @@ export class MissionsModal {
       return;
     }
 
-    filtered.forEach((cmd, idx) => {
+    const cardsHtml = filtered.map((cmd, idx) => {
       const isCompleted = !!this.completedMissions[cmd.id];
-      const card = document.createElement('div');
-      card.className = `mission-card ${isCompleted ? 'completed' : ''}`;
-      card.id = `mission-card-${cmd.id}`;
-
-      card.innerHTML = `
-        <div class="mission-card-header">
-          <div class="mission-num-badge">#${idx + 1}</div>
-          <div class="mission-title-group">
-            <h3 class="mission-card-title">${cmd.title}</h3>
-            <span class="mission-cat-tag">${cmd.categoryName}</span>
+      return `
+        <div class="mission-card ${isCompleted ? 'completed' : ''}" id="mission-card-${cmd.id}">
+          <div class="mission-card-header">
+            <div class="mission-num-badge">#${idx + 1}</div>
+            <div class="mission-title-group">
+              <h3 class="mission-card-title">${cmd.title}</h3>
+              <span class="mission-cat-tag">${cmd.categoryName || ''}</span>
+            </div>
+            <div class="mission-status-badge ${isCompleted ? 'done' : ''}">
+              ${isCompleted ? '✓ COMPLETED' : `+${cmd.xp} XP`}
+            </div>
           </div>
-          <div class="mission-status-badge ${isCompleted ? 'done' : ''}">
-            ${isCompleted ? '✓ COMPLETED' : `+${cmd.xp} XP`}
+
+          <p class="mission-card-desc">🎯 <strong>Mission:</strong> ${cmd.mission}</p>
+
+          <!-- Command Pill -->
+          <div class="mission-cmd-box">
+            <code class="mission-code">${cmd.command}</code>
+            <button class="mission-copy-btn" title="Copy command" data-cmd="${cmd.command}">📋 Copy</button>
           </div>
-        </div>
 
-        <p class="mission-card-desc">🎯 <strong>Mission:</strong> ${cmd.mission}</p>
+          <!-- Collapsible Hint Section -->
+          <details class="mission-hint-details">
+            <summary class="mission-hint-summary">💡 View Hint & Flags Explanation</summary>
+            <div class="mission-hint-content">
+              <p>${cmd.hint}</p>
+              ${cmd.syscall ? `<div class="mission-syscall-tag">⚙️ Syscall: <code>${cmd.syscall}</code></div>` : ''}
+              <div class="mission-why-tag">🧠 <strong>Why in Kernel:</strong> ${cmd.whyHappeningHere}</div>
+            </div>
+          </details>
 
-        <!-- Command Pill -->
-        <div class="mission-cmd-box">
-          <code class="mission-code">${cmd.command}</code>
-          <button class="mission-copy-btn" title="Copy command" data-cmd="${cmd.command}">📋 Copy</button>
-        </div>
-
-        <!-- Collapsible Hint Section -->
-        <details class="mission-hint-details">
-          <summary class="mission-hint-summary">💡 View Hint & Flags Explanation</summary>
-          <div class="mission-hint-content">
-            <p>${cmd.hint}</p>
-            ${cmd.syscall ? `<div class="mission-syscall-tag">⚙️ Syscall: <code>${cmd.syscall}</code></div>` : ''}
-            <div class="mission-why-tag">🧠 <strong>Why in Kernel:</strong> ${cmd.whyHappeningHere}</div>
+          <!-- Action Buttons Row -->
+          <div class="mission-card-actions">
+            <button class="mission-action-btn run-3d-btn" data-id="${cmd.id}" data-cmd="${cmd.command}">
+              ▶ Run & Simulate in 3D
+            </button>
+            <button class="mission-action-btn practice-term-btn" data-cmd="${cmd.command}">
+              ⌨️ Practice in Terminal
+            </button>
+            <button class="mission-action-btn toggle-done-btn ${isCompleted ? 'done' : ''}" data-id="${cmd.id}">
+              ${isCompleted ? '✓ Done' : 'Mark Done'}
+            </button>
           </div>
-        </details>
-
-        <!-- Action Buttons Row -->
-        <div class="mission-card-actions">
-          <button class="mission-action-btn run-3d-btn" data-id="${cmd.id}" data-cmd="${cmd.command}">
-            ▶ Run & Simulate in 3D
-          </button>
-          <button class="mission-action-btn practice-term-btn" data-cmd="${cmd.command}">
-            ⌨️ Practice in Terminal
-          </button>
-          <button class="mission-action-btn toggle-done-btn ${isCompleted ? 'done' : ''}" data-id="${cmd.id}">
-            ${isCompleted ? '✓ Done' : 'Mark Done'}
-          </button>
         </div>
       `;
+    }).join('');
 
-      // Event listeners on card buttons
-      const copyBtn = card.querySelector('.mission-copy-btn');
-      copyBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigator.clipboard.writeText(cmd.command);
-        copyBtn.textContent = '✓ Copied!';
-        setTimeout(() => copyBtn.textContent = '📋 Copy', 2000);
-      });
-
-      const run3dBtn = card.querySelector('.run-3d-btn');
-      run3dBtn.addEventListener('click', () => {
-        this.close();
-        this.runCommandIn3D(cmd);
-      });
-
-      const practiceBtn = card.querySelector('.practice-term-btn');
-      practiceBtn.addEventListener('click', () => {
-        this.close();
-        if (this.terminalUI && this.terminalUI.inputEl) {
-          this.terminalUI.inputEl.value = cmd.command;
-          this.terminalUI.inputEl.focus();
-        }
-      });
-
-      const toggleDoneBtn = card.querySelector('.toggle-done-btn');
-      toggleDoneBtn.addEventListener('click', () => {
-        this.toggleMissionDone(cmd);
-      });
-
-      grid.appendChild(card);
-    });
+    grid.innerHTML = cardsHtml;
   }
 
   toggleMissionDone(cmd) {

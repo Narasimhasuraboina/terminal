@@ -52,7 +52,11 @@ export class WaypointBeacon {
     // High-Contrast Cyber Tag
     ctx.fillStyle = 'rgba(6, 12, 28, 0.95)';
     ctx.beginPath();
-    ctx.roundRect(8, 8, 496, 112, 20);
+    if (typeof ctx.roundRect === 'function') {
+      ctx.roundRect(8, 8, 496, 112, 20);
+    } else {
+      ctx.rect(8, 8, 496, 112);
+    }
     ctx.fill();
 
     ctx.strokeStyle = isError ? '#ff0055' : '#00f3ff';

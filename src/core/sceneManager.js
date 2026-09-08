@@ -3,26 +3,32 @@ import * as THREE from 'three';
 export class SceneManager {
   constructor(canvasContainer) {
     this.container = canvasContainer;
-    this.width = canvasContainer.clientWidth;
-    this.height = canvasContainer.clientHeight;
+    this.width = (canvasContainer && canvasContainer.clientWidth > 0) ? canvasContainer.clientWidth : (window.innerWidth || 1280);
+    this.height = (canvasContainer && canvasContainer.clientHeight > 0) ? canvasContainer.clientHeight : (window.innerHeight || 720);
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x060913);
     this.scene.fog = new THREE.FogExp2(0x060913, 0.0075);
 
     // Renderer
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      powerPreference: 'high-performance'
-    });
-    this.renderer.setSize(this.width, this.height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.2;
-    this.container.appendChild(this.renderer.domElement);
+    try {
+      this.renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        powerPreference: 'high-performance'
+      });
+      this.renderer.setSize(this.width, this.height);
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      this.renderer.toneMappingExposure = 1.2;
+      this.container.appendChild(this.renderer.domElement);
+    } catch (e) {
+      console.warn('WebGL initialization warning/fallback:', e);
+      this.renderer = null;
+    }
 
     // Camera
-    this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 0.1, 1000);
+    const aspect = this.height > 0 ? (this.width / this.height) : (16 / 9);
+    this.camera = new THREE.PerspectiveCamera(50, aspect, 0.1, 1000);
     this.camera.position.set(0, 45, 80);
 
     // Interactive Raycasting for 3D Node Inspection
@@ -159,11 +165,15 @@ export class SceneManager {
   }
 
   onResize() {
-    this.width = this.container.clientWidth;
-    this.height = this.container.clientHeight;
-    this.camera.aspect = this.width / this.height;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(this.width, this.height);
+    this.width = (this.container && this.container.clientWidth > 0) ? this.container.clientWidth : (window.innerWidth || 1280);
+    this.height = (this.container && this.container.clientHeight > 0) ? this.container.clientHeight : (window.innerHeight || 720);
+    if (this.camera && this.height > 0) {
+      this.camera.aspect = this.width / this.height;
+      this.camera.updateProjectionMatrix();
+    }
+    if (this.renderer) {
+      this.renderer.setSize(this.width, this.height);
+    }
   }
 
   update(delta) {
@@ -173,6 +183,8 @@ export class SceneManager {
   }
 
   render() {
-    this.renderer.render(this.scene, this.camera);
+    if (this.renderer && this.scene && this.camera) {
+      this.renderer.render(this.scene, this.camera);
+    }
   }
 }
