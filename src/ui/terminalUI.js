@@ -1,3 +1,9 @@
+/**
+ * @fileoverview TerminalUI - Interactive cyber terminal interface providing command input,
+ * history cycling, syntax highlighting, and timeline synchronization.
+ * @module ui/terminalUI
+ */
+
 import { VirtualLinuxEnv } from '../simulation/virtualLinuxEnv.js';
 import { sound } from '../audio/soundFX.js';
 
