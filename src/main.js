@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Main Application Entry Point - Bootstraps Three.js scene, UI overlays,
+ * audio synthesizers, terminal event listeners, and animation loop.
+ * @module main
+ */
+
 import * as THREE from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
 import { SceneManager } from './core/sceneManager.js';
