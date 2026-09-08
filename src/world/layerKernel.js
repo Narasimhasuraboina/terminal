@@ -1,3 +1,9 @@
+/**
+ * @fileoverview LayerKernel - 3D representation of Ring 0 Kernel Space,
+ * multi-core CPU scheduler sphere, MMU page tables, and physical RAM cache.
+ * @module world/layerKernel
+ */
+
 import * as THREE from 'three';
 
 export class LayerKernel {
