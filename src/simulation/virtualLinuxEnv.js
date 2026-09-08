@@ -1,3 +1,9 @@
+/**
+ * @fileoverview VirtualLinuxEnv - In-memory simulated Linux environment managing
+ * current working directory, VFS path traversal, and command mock execution.
+ * @module simulation/virtualLinuxEnv
+ */
+
 // In-Memory Virtual Linux Environment & Real-Time Shell Simulation Engine
 // Pre-populated with complete real files, directories, logs, configs, and command handlers
 
