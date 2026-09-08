@@ -1,3 +1,9 @@
+/**
+ * @fileoverview LayerSyscall - 3D visual representation of the Linux Syscall Gateway,
+ * privilege ring boundary, file descriptor table, and syscall vector dispatcher.
+ * @module world/layerSyscall
+ */
+
 import * as THREE from 'three';
 
 export class LayerSyscall {
