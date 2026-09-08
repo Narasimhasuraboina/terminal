@@ -1,3 +1,9 @@
+/**
+ * @fileoverview SceneManager - Three.js WebGL scene orchestrator with lighting rigs,
+ * tone mapping, fog parameters, and interactive raycasting.
+ * @module core/sceneManager
+ */
+
 import * as THREE from 'three';
 
 export class SceneManager {
