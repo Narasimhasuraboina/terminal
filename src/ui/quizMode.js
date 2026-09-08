@@ -1,3 +1,9 @@
+/**
+ * @fileoverview QuizMode - Interactive knowledge challenge testing Linux syscalls,
+ * kernel architectures, and virtual memory concepts with streak tracking.
+ * @module ui/quizMode
+ */
+
 import confetti from 'canvas-confetti';
 import { sound } from '../audio/soundFX.js';
 
