@@ -1,3 +1,9 @@
+/**
+ * @fileoverview DataHighways - 3D Bézier curves and glowing bus tubes connecting
+ * User Space, Syscall Gateway, Kernel Core, and VFS Storage layers.
+ * @module world/dataHighways
+ */
+
 import * as THREE from 'three';
 
 export class DataHighways {
