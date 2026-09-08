@@ -1,3 +1,9 @@
+/**
+ * @fileoverview WaypointBeacon - Holographic 3D marker beacon with dynamic canvas text
+ * indicating the currently active simulation step and execution focus.
+ * @module world/waypointBeacon
+ */
+
 import * as THREE from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
 
