@@ -1,3 +1,9 @@
+/**
+ * @fileoverview InspectorModal - Holographic node inspection modal presenting Linux kernel
+ * C struct definitions, x86 assembly instructions, and subsystem descriptions.
+ * @module ui/inspectorModal
+ */
+
 export class InspectorModal {
   constructor(domElement) {
     this.container = domElement;
