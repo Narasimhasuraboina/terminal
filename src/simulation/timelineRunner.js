@@ -1,3 +1,9 @@
+/**
+ * @fileoverview TimelineRunner - Execution engine driving step-by-step 3D animations,
+ * speed adjustments, stage scrub navigation, and waypoint synchronization.
+ * @module simulation/timelineRunner
+ */
+
 import * as THREE from 'three';
 import { sound } from '../audio/soundFX.js';
 
