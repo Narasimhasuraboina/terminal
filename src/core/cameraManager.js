@@ -1,3 +1,9 @@
+/**
+ * @fileoverview CameraManager - Coordinates 3D orbital camera movements,
+ * waypoint transitions, node zoom views, and tween interpolation.
+ * @module core/cameraManager
+ */
+
 import * as THREE from 'three';
 import * as TWEEN from '@tweenjs/tween.js';
 
