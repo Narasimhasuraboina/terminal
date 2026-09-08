@@ -1,3 +1,9 @@
+/**
+ * @fileoverview LayerUserSpace - 3D representation of Ring 3 User Space,
+ * hosting the Terminal emulator, Line Discipline, Lexer, and process nodes.
+ * @module world/layerUserSpace
+ */
+
 import * as THREE from 'three';
 
 export class LayerUserSpace {
