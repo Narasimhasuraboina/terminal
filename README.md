@@ -61,3 +61,24 @@ python3 -m http.server 3000 --directory dist
 - **Web Audio API**: Procedurally synthesized sci-fi sound effects (zero external audio files).
 - **Canvas Confetti**: Celebratory particle effects for quiz rewards.
 - **Vite**: Blazing-fast development and optimized production bundling.
+
+## 📚 Documentation & Reference Guides
+
+- [System Architecture](docs/ARCHITECTURE.md) - Deep-dive into 4-layer 3D motherboard design
+- [System Call Reference](docs/SYSCALLS.md) - Linux syscall calling conventions and dispatch table
+- [Virtual File System & Inodes](docs/VFS_STRUCTURE.md) - Inode hierarchy and Page Cache model
+- [Command Reference](docs/COMMAND_REFERENCE.md) - 1,000-command catalog taxonomy
+- [Keyboard Shortcuts](docs/KEYBOARD_SHORTCUTS.md) - Navigation and playback controls
+- [Performance Guide](docs/PERFORMANCE.md) - WebGL optimization, chunk splitting, and event delegation
+- [Web Audio Synthesis](docs/AUDIO_ENGINE.md) - Procedural synthesizer specifications
+- [Camera Navigation](docs/CAMERA_CONTROLS.md) - Orbital kinematics and cinematic presets
+- [Quiz Engine](docs/QUIZ_SYSTEM.md) - Interactive challenge and streak system
+- [Practice Sandbox](docs/SANDBOX_GUIDE.md) - Pre-configured scenario files and test fixtures
+- [Contributing Guidelines](docs/CONTRIBUTING.md) - Code style, PR guidelines, and setup
+- [Changelog](docs/CHANGELOG.md) - Version history and roadmap milestones
+
+## 🧪 Automated Testing
+```bash
+npm test
+```
+Runs integrity checks across the command catalog, VFS traversal, command engine, syscall mappings, and sandbox files.
