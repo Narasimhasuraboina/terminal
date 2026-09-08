@@ -1,3 +1,9 @@
+/**
+ * @fileoverview CommandEngine - Command parser that analyzes user inputs and decomposes
+ * shell operations into sequenced 3D architectural animation plans.
+ * @module simulation/commandEngine
+ */
+
 import { COMMAND_PRESETS } from './commandPresets.js';
 import { LINUX_100_COMMANDS } from '../data/linux100Commands.js';
 
