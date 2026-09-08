@@ -1,3 +1,9 @@
+/**
+ * @fileoverview BlueprintOverlay - Toggleable 2D architectural blueprint rendering
+ * system bus schematics and layer relationship diagrams.
+ * @module ui/blueprintOverlay
+ */
+
 export class BlueprintOverlay {
   constructor(domElement, runner) {
     this.container = domElement;
