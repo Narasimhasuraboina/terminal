@@ -1,0 +1,8 @@
+Sep 08 00:01:10 kernel-vm sshd[1042]: Accepted publickey for devops from 192.168.1.50 port 52310 ssh2
+Sep 08 00:01:12 kernel-vm sudo:   devops : TTY=pts/0 ; PWD=/home/devops ; USER=root ; COMMAND=/bin/systemctl status nginx
+Sep 08 00:01:12 kernel-vm sudo: pam_unix(sudo:session): session opened for user root by devops(uid=1000)
+Sep 08 00:01:13 kernel-vm sudo: pam_unix(sudo:session): session closed for user root
+Sep 08 00:02:01 kernel-vm CRON[1189]: pam_unix(cron:session): session opened for user root by (uid=0)
+Sep 08 00:02:01 kernel-vm CRON[1189]: pam_unix(cron:session): session closed for user root
+Sep 08 00:03:45 kernel-vm sshd[1340]: Failed password for invalid user admin from 203.0.113.88 port 41208 ssh2
+Sep 08 00:03:48 kernel-vm sshd[1340]: Connection closed by authenticating user admin 203.0.113.88 port 41208 [preauth]
