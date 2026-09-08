@@ -1,3 +1,9 @@
+/**
+ * @fileoverview CommandPresets - Catalog of pre-configured simulation plans for common
+ * commands (ls, cat, grep, mkdir, kill) featuring real kernel struct readouts.
+ * @module simulation/commandPresets
+ */
+
 export const COMMAND_PRESETS = {
   'ls -la': {
     name: 'ls -la',
