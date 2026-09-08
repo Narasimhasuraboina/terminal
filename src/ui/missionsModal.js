@@ -1,3 +1,9 @@
+/**
+ * @fileoverview MissionsModal - Interactive modal browsing 100+ Linux missions with category
+ * filtering, live search index, 3D simulation triggers, and progress tracking.
+ * @module ui/missionsModal
+ */
+
 import { LINUX_100_COMMANDS, CATEGORIES } from '../data/linux100Commands.js';
 import confetti from 'canvas-confetti';
 import { sound } from '../audio/soundFX.js';
