@@ -1,3 +1,9 @@
+/**
+ * @fileoverview SoundFX - Procedural sound synthesizer utilizing Web Audio API
+ * oscillators, gain envelopes, and biquad filters for sci-fi UI feedback.
+ * @module audio/soundFX
+ */
+
 // Procedural Web Audio API Sound Synthesizer for Cyber Linux 3D
 class SoundFX {
   constructor() {
