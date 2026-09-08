@@ -1,0 +1,7 @@
+192.168.1.10 - - [08/Sep/2026:00:01:02 +0000] "GET /index.html HTTP/1.1" 200 4523 "-" "Mozilla/5.0"
+192.168.1.11 - - [08/Sep/2026:00:01:05 +0000] "GET /assets/style.css HTTP/1.1" 200 12093 "http://localhost/" "Mozilla/5.0"
+192.168.1.12 - - [08/Sep/2026:00:01:09 +0000] "POST /api/login HTTP/1.1" 200 312 "-" "curl/7.88.1"
+192.168.1.13 - - [08/Sep/2026:00:01:14 +0000] "GET /admin HTTP/1.1" 403 548 "-" "Python-urllib/3.10"
+192.168.1.14 - - [08/Sep/2026:00:01:19 +0000] "GET /nonexistent HTTP/1.1" 404 153 "-" "Mozilla/5.0"
+10.0.0.5 - - [08/Sep/2026:00:01:25 +0000] "GET /metrics HTTP/1.1" 200 8920 "-" "Prometheus/2.45.0"
+10.0.0.6 - - [08/Sep/2026:00:01:30 +0000] "GET /healthz HTTP/1.1" 200 15 "-" "kube-probe/1.28"
