@@ -1,3 +1,9 @@
+/**
+ * @fileoverview PracticePage - Dedicated split-screen Linux command practice laboratory
+ * with mission tracker, progressive hints, VFS tree inspector, and gamified XP.
+ * @module ui/practicePage
+ */
+
 import { LINUX_100_COMMANDS, CATEGORIES } from '../data/linux100Commands.js';
 import { VirtualLinuxEnv } from '../simulation/virtualLinuxEnv.js';
 import { sound } from '../audio/soundFX.js';
