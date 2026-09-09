@@ -7,11 +7,14 @@
 // In-Memory Virtual Linux Environment & Real-Time Shell Simulation Engine
 // Pre-populated with complete real files, directories, logs, configs, and command handlers
 
+import { LINUX_100_COMMANDS } from '../data/linux100Commands.js';
+
 export class VirtualLinuxEnv {
   constructor() {
     this.user = 'user';
     this.hostname = 'linux';
     this.currentPath = '/home/user';
+    this.oldPath = '/home/user';
     this.env = {
       USER: 'user',
       HOME: '/home/user',
@@ -34,6 +37,7 @@ export class VirtualLinuxEnv {
       { pid: 412, ppid: 1, user: 'root', cpu: 0.0, mem: 0.2, cmd: '/lib/systemd/systemd-journald', stat: 'Ss' },
       { pid: 890, ppid: 1, user: 'root', cpu: 0.2, mem: 1.1, cmd: '/usr/bin/dockerd -H fd://', stat: 'Ssl' },
       { pid: 1042, ppid: 1, user: 'root', cpu: 0.0, mem: 0.3, cmd: 'sshd: /usr/sbin/sshd -D', stat: 'Ss' },
+      { pid: 1337, ppid: 1, user: 'user', cpu: 14.5, mem: 4.2, cmd: './heavy_worker', stat: 'R' },
       { pid: 1380, ppid: 1042, user: 'user', cpu: 0.0, mem: 0.3, cmd: 'sshd: user@pts/0', stat: 'S' },
       { pid: 1381, ppid: 1380, user: 'user', cpu: 0.1, mem: 0.5, cmd: '-bash', stat: 'Ss' },
       { pid: 1420, ppid: 1381, user: 'user', cpu: 1.8, mem: 2.4, cmd: 'node server.js', stat: 'Sl+' },
@@ -83,6 +87,20 @@ export class VirtualLinuxEnv {
                   owner: 'user',
                   group: 'user',
                   content: 'Linux Operating System Notes:\n- User Space operates in Ring 3 (restricted)\n- Kernel Mode operates in Ring 0 (full hardware access)\n- System Calls (Syscalls) bridge Ring 3 and Ring 0\n- Virtual Memory uses 4-level page table translation'
+                },
+                'file.txt': {
+                  type: 'file',
+                  perm: 'rw-r--r--',
+                  owner: 'user',
+                  group: 'user',
+                  content: '[SYSTEM LOG - Linux Kernel 6.11]\n[    0.000000] Linux version 6.11.0-generic (buildd@linux) (gcc 13.2.0)\n[    0.004120] ACPI: Core revision 20240322\n[    0.012540] Memory: 32768MB available\n[    1.024000] EXT4-fs (nvme0n1p2): mounted filesystem with ordered data mode.\n[    2.105400] systemd[1]: Reached target Graphical Interface.\n[   14.240100] pty: allocated ptmx master terminal endpoint.\n[   18.420000] Status: All kernel subsystems nominal.'
+                },
+                'log': {
+                  type: 'file',
+                  perm: 'rw-r--r--',
+                  owner: 'user',
+                  group: 'user',
+                  content: '2026-08-28 14:00:01 INFO System initialization complete\n2026-08-28 14:00:05 WARN High memory usage in worker pool\n2026-08-28 14:01:12 INFO Client connection established\n2026-08-28 14:02:40 WARN Disk I/O latency spike detected\n2026-08-28 14:03:00 WARN CPU throttle on thermal boundary\n2026-08-28 14:04:15 INFO Backup routine finished'
                 },
                 'scores.txt': {
                   type: 'file',
@@ -637,7 +655,12 @@ export class VirtualLinuxEnv {
         return { output: this.currentPath, code: 0 };
 
       case 'cd': {
-        const target = args[0] || '~';
+        let target = args[0] || '~';
+        let isPrevious = false;
+        if (target === '-') {
+          target = this.oldPath || '/home/user';
+          isPrevious = true;
+        }
         const newPath = this.resolvePath(target);
         const node = this.getNode(newPath);
         if (!node) {
@@ -646,9 +669,10 @@ export class VirtualLinuxEnv {
         if (node.type !== 'dir') {
           return { output: `bash: cd: ${target}: Not a directory`, code: 1 };
         }
+        this.oldPath = this.currentPath;
         this.currentPath = newPath;
         this.env.PWD = newPath;
-        return { output: '', code: 0 };
+        return { output: isPrevious ? newPath : '', code: 0 };
       }
 
       case 'ls': {
@@ -871,6 +895,9 @@ export class VirtualLinuxEnv {
       case 'grep': {
         const ignoreCase = args.some(a => a.includes('i') && a.startsWith('-'));
         const lineNums = args.some(a => a.includes('n') && a.startsWith('-'));
+        const invertMatch = args.some(a => a.includes('v') && a.startsWith('-'));
+        const countOnly = args.some(a => a.includes('c') && a.startsWith('-'));
+        const listOnly = args.some(a => a.includes('l') && a.startsWith('-'));
         const nonFlagArgs = args.filter(a => !a.startsWith('-'));
         const patternStr = (nonFlagArgs[0] || '').replace(/^["']|["']$/g, '');
         const targetFile = nonFlagArgs[1];
@@ -891,11 +918,19 @@ export class VirtualLinuxEnv {
         const matches = [];
 
         lines.forEach((line, idx) => {
-          if (regex.test(line)) {
+          const isMatched = regex.test(line);
+          const keep = invertMatch ? !isMatched : isMatched;
+          if (keep) {
             matches.push(lineNums ? `${idx + 1}:${line}` : line);
           }
         });
 
+        if (countOnly) {
+          return { output: String(matches.length), code: 0 };
+        }
+        if (listOnly && matches.length > 0 && targetFile) {
+          return { output: targetFile, code: 0 };
+        }
         return { output: matches.join('\n'), code: matches.length > 0 ? 0 : 1 };
       }
 
@@ -905,11 +940,13 @@ export class VirtualLinuxEnv {
 
         if (targetFile) {
           const node = this.getNode(targetFile);
-          if (node && node.type === 'file') content = node.content;
+          if (!node) return { output: `wc: ${targetFile}: No such file or directory`, code: 1 };
+          if (node.type === 'dir') return { output: `wc: ${targetFile}: Is a directory`, code: 1 };
+          content = node.content || '';
         }
 
         const lines = content ? content.split('\n').length : 0;
-        const words = content ? content.trim().split(/\s+/).length : 0;
+        const words = content ? content.trim().split(/\s+/).filter(Boolean).length : 0;
         const bytes = content ? content.length : 0;
 
         if (args.includes('-l')) {
@@ -1252,7 +1289,9 @@ export class VirtualLinuxEnv {
         let content = stdin;
         if (target) {
           const node = this.getNode(target);
-          if (node && node.type === 'file') content = node.content;
+          if (!node) return { output: `head: cannot open '${target}' for reading: No such file or directory`, code: 1 };
+          if (node.type === 'dir') return { output: `head: error reading '${target}': Is a directory`, code: 1 };
+          content = node.content || '';
         }
         const lines = (content || '').split('\n').slice(0, count);
         return { output: lines.join('\n'), code: 0 };
@@ -1265,10 +1304,28 @@ export class VirtualLinuxEnv {
         let content = stdin;
         if (target) {
           const node = this.getNode(target);
-          if (node && node.type === 'file') content = node.content;
+          if (!node) return { output: `tail: cannot open '${target}' for reading: No such file or directory`, code: 1 };
+          if (node.type === 'dir') return { output: `tail: error reading '${target}': Is a directory`, code: 1 };
+          content = node.content || '';
         }
         const lines = (content || '').split('\n').slice(-count);
         return { output: lines.join('\n'), code: 0 };
+      }
+
+      case 'date': {
+        return { output: new Date().toUTCString(), code: 0 };
+      }
+
+      case 'which': {
+        const target = args[0];
+        if (!target) return { output: '', code: 1 };
+        return { output: `/usr/bin/${target}`, code: 0 };
+      }
+
+      case 'man': {
+        const target = args[0];
+        if (!target) return { output: 'What manual page do you want?', code: 1 };
+        return { output: `MANUAL PAGE FOR: ${target}\nNAME\n    ${target} - Linux command / POSIX utility\nSYNOPSIS\n    ${target} [OPTIONS] [ARGUMENTS]...\nDESCRIPTION\n    Interactive Linux manual page entry for ${target} in system environment.`, code: 0 };
       }
 
       case 'find': {
@@ -1293,8 +1350,22 @@ export class VirtualLinuxEnv {
         return { output: results.join('\n'), code: 0 };
       }
 
-      default:
+      default: {
+        // Fallback: Check if command exists in 1,000 Linux Commands Master Catalog
+        const rawCmd = cmdStr.trim();
+        const catalogMatch = LINUX_100_COMMANDS.find(c =>
+          c.command.toLowerCase() === rawCmd.toLowerCase() ||
+          c.name.toLowerCase() === rawCmd.toLowerCase() ||
+          c.name.split(/\s+/)[0].toLowerCase() === cmdName ||
+          c.command.split(/\s+/)[0].toLowerCase() === cmdName
+        );
+
+        if (catalogMatch && catalogMatch.output) {
+          return { output: catalogMatch.output, code: 0 };
+        }
+
         return { output: `bash: ${cmdName}: command not found`, code: 127 };
+      }
     }
   }
 

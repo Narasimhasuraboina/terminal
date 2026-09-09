@@ -78,7 +78,10 @@ export class HudOverlay {
             <span class="side-step-badge" id="dir-step-badge">STEP 1 OF 8</span>
             <span class="side-layer-badge" id="dir-layer-badge">USER SPACE</span>
           </div>
-          <span class="side-syscall-badge" id="dir-syscall-badge">NO SYSCALL (USER MODE)</span>
+          <div class="side-header-actions">
+            <span class="side-syscall-badge" id="dir-syscall-badge">NO SYSCALL (USER MODE)</span>
+            <button class="side-toggle-btn" id="side-toggle-btn" title="Minimize / Expand Story Panel">_</button>
+          </div>
         </div>
 
         <!-- 1. WHAT IS HAPPENING CARD -->
@@ -215,6 +218,14 @@ export class HudOverlay {
       soundBtn.classList.toggle('muted', isMuted);
     });
 
+    const sideToggleBtn = this.container.querySelector('#side-toggle-btn');
+    const sidePanel = this.container.querySelector('#side-process-panel');
+    if (sideToggleBtn && sidePanel) {
+      sideToggleBtn.addEventListener('click', () => {
+        sidePanel.classList.toggle('minimized');
+      });
+    }
+
     const practiceBtn = this.container.querySelector('#btn-practice-page');
     if (practiceBtn) {
       practiceBtn.addEventListener('click', () => {
@@ -259,7 +270,7 @@ export class HudOverlay {
   updateMissionsBadge(completed, total) {
     const textEl = this.container.querySelector('#missions-btn-text');
     if (textEl) {
-      textEl.textContent = `100 Missions (${completed}/${total})`;
+      textEl.textContent = `1,000 Missions (${completed}/${total})`;
     }
   }
 

@@ -10,13 +10,13 @@ import { sound } from '../audio/soundFX.js';
 import confetti from 'canvas-confetti';
 
 export class PracticePage {
-  constructor({ container, onSwitchTo3D, commandEngine, timelineRunner }) {
+  constructor({ container, onSwitchTo3D, commandEngine, timelineRunner, vEnv = null }) {
     this.container = container;
     this.onSwitchTo3D = onSwitchTo3D;
     this.commandEngine = commandEngine;
     this.timelineRunner = timelineRunner;
 
-    this.vEnv = new VirtualLinuxEnv();
+    this.vEnv = vEnv || new VirtualLinuxEnv();
     this.selectedCategory = 'all';
     this.searchQuery = '';
     this.currentMissionIndex = 0;
@@ -66,14 +66,14 @@ export class PracticePage {
             <span class="practice-logo">🐧</span>
             <div>
               <h1 class="practice-header-title">Linux Command Practice Lab</h1>
-              <span class="practice-header-sub">Full Interactive Shell & 100 Daily Missions Arena</span>
+              <span class="practice-header-sub">Full Interactive Shell & 1,000 Daily Missions Arena</span>
             </div>
           </div>
 
           <div class="practice-stats-strip">
             <div class="p-stat">
               <span class="p-stat-label">COMPLETED</span>
-              <span class="p-stat-val" id="p-completed-val">0 / 100</span>
+              <span class="p-stat-val" id="p-completed-val">0 / 1,000</span>
             </div>
             <div class="p-progress-track">
               <div class="p-progress-fill" id="p-progress-fill" style="width: 0%"></div>
@@ -98,7 +98,7 @@ export class PracticePage {
             <div class="p-sidebar-header">
               <div class="p-search-box">
                 <span class="p-search-icon">🔍</span>
-                <input type="text" id="p-mission-search" placeholder="Search 100 practice tasks..." />
+                <input type="text" id="p-mission-search" placeholder="Search 1,000 practice tasks..." />
               </div>
               <div class="p-cat-pills" id="p-cat-pills">
                 <!-- Rendered dynamically -->
@@ -600,16 +600,26 @@ export class PracticePage {
     this.updatePrompt();
     this.updateVFSExplorer();
 
-    // Check if command matches the currently selected active mission or any mission!
+    // Check if command matches the currently selected active mission or any mission in the catalog!
     const activeCmd = this.filteredMissions[this.currentMissionIndex];
-    if (activeCmd) {
-      const isMatch = activeCmd.command.toLowerCase() === trimmed.toLowerCase() ||
-                      activeCmd.name.toLowerCase() === trimmed.toLowerCase() ||
-                      activeCmd.name.split(/\s+/)[0].toLowerCase() === trimmed.split(/\s+/)[0].toLowerCase();
-      if (isMatch) {
-        this.markMissionDoneById(activeCmd.id);
-        this.appendOutput(`✨ Mission Complete! +${activeCmd.xp} XP Earned.`, false);
-      }
+    let matchedCmd = null;
+    if (activeCmd && (
+      activeCmd.command.toLowerCase() === trimmed.toLowerCase() ||
+      activeCmd.name.toLowerCase() === trimmed.toLowerCase() ||
+      activeCmd.name.split(/\s+/)[0].toLowerCase() === trimmed.split(/\s+/)[0].toLowerCase()
+    )) {
+      matchedCmd = activeCmd;
+    } else {
+      matchedCmd = LINUX_100_COMMANDS.find(c =>
+        c.command.toLowerCase() === trimmed.toLowerCase() ||
+        c.name.toLowerCase() === trimmed.toLowerCase() ||
+        c.name.split(/\s+/)[0].toLowerCase() === trimmed.split(/\s+/)[0].toLowerCase()
+      );
+    }
+
+    if (matchedCmd) {
+      this.markMissionDoneById(matchedCmd.id);
+      this.appendOutput(`✨ Mission Complete: "${matchedCmd.name}"! +${matchedCmd.xp} XP Earned.`, false);
     }
   }
 

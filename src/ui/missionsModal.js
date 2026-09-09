@@ -18,6 +18,7 @@ export class MissionsModal {
     this.isOpen = false;
     this.selectedCategory = 'all';
     this.searchQuery = '';
+    this.cardsLimit = 40;
     this.completedMissions = this.loadProgress();
 
     this.initDOM();
@@ -69,7 +70,7 @@ export class MissionsModal {
           <div class="missions-header-left">
             <div class="missions-icon-badge">🎯</div>
             <div>
-              <h2 class="missions-title">100 Daily Linux Commands & Practice Missions</h2>
+              <h2 class="missions-title">1,000 Linux Commands & Practice Missions</h2>
               <p class="missions-subtitle">Hands-on mastery with real-world scenarios, hints, and live 3D hardware simulation</p>
             </div>
           </div>
@@ -80,7 +81,7 @@ export class MissionsModal {
         <div class="missions-stats-bar">
           <div class="missions-stat-item">
             <span class="stat-label">COMPLETED</span>
-            <span class="stat-value" id="missions-completed-val">0 / 100</span>
+            <span class="stat-value" id="missions-completed-val">0 / 1,000</span>
           </div>
           <div class="missions-progress-container">
             <div class="missions-progress-bar" id="missions-progress-bar" style="width: 0%"></div>
@@ -99,7 +100,7 @@ export class MissionsModal {
         <div class="missions-controls-row">
           <div class="missions-search-wrapper">
             <span class="search-icon">🔍</span>
-            <input type="text" id="missions-search-input" class="missions-search-input" placeholder="Search 100 commands by name, description, flag, or syscall..." />
+            <input type="text" id="missions-search-input" class="missions-search-input" placeholder="Search 1,000 commands by name, description, flag, or syscall..." />
             <button id="missions-clear-search" class="missions-clear-search hidden">&times;</button>
           </div>
           <div class="missions-category-tabs" id="missions-category-tabs">
@@ -123,17 +124,21 @@ export class MissionsModal {
     });
 
     const searchInput = this.modalEl.querySelector('#missions-search-input');
-    const clearBtn = this.modalEl.querySelector('#missions-clear-search');
-
+    let searchDebounce = null;
     searchInput.addEventListener('input', (e) => {
-      this.searchQuery = e.target.value.toLowerCase().trim();
-      clearBtn.classList.toggle('hidden', !this.searchQuery);
-      this.renderCards();
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        this.searchQuery = e.target.value.toLowerCase().trim();
+        this.cardsLimit = 40;
+        clearBtn.classList.toggle('hidden', !this.searchQuery);
+        this.renderCards();
+      }, 150);
     });
 
     clearBtn.addEventListener('click', () => {
       searchInput.value = '';
       this.searchQuery = '';
+      this.cardsLimit = 40;
       clearBtn.classList.add('hidden');
       this.renderCards();
       searchInput.focus();
@@ -142,6 +147,13 @@ export class MissionsModal {
     // Delegated click handler for mission cards
     const grid = this.modalEl.querySelector('#missions-cards-grid');
     grid.addEventListener('click', (e) => {
+      const loadMoreBtn = e.target.closest('#missions-load-more');
+      if (loadMoreBtn) {
+        this.cardsLimit += 40;
+        this.renderCards();
+        return;
+      }
+
       const copyBtn = e.target.closest('.mission-copy-btn');
       if (copyBtn) {
         e.stopPropagation();
@@ -215,6 +227,7 @@ export class MissionsModal {
 
       btn.addEventListener('click', () => {
         this.selectedCategory = cat.id;
+        this.cardsLimit = 40;
         this.renderCategoryTabs();
         this.renderCards();
       });
@@ -254,7 +267,9 @@ export class MissionsModal {
       return;
     }
 
-    const cardsHtml = filtered.map((cmd, idx) => {
+    const visibleCards = filtered.slice(0, this.cardsLimit);
+
+    let cardsHtml = visibleCards.map((cmd, idx) => {
       const isCompleted = !!this.completedMissions[cmd.id];
       return `
         <div class="mission-card ${isCompleted ? 'completed' : ''}" id="mission-card-${cmd.id}">
@@ -302,6 +317,16 @@ export class MissionsModal {
         </div>
       `;
     }).join('');
+
+    if (filtered.length > this.cardsLimit) {
+      cardsHtml += `
+        <div class="missions-load-more-wrap" style="grid-column: 1 / -1; text-align: center; padding: 24px 0;">
+          <button class="missions-action-btn" id="missions-load-more" style="padding: 12px 28px; font-size: 13px; font-weight: 700; background: rgba(0, 243, 255, 0.15); border: 1px solid var(--accent-cyan); border-radius: 8px; color: var(--accent-cyan); cursor: pointer; transition: all 0.2s;">
+            ⚡ Load More Tasks (${this.cardsLimit} of ${filtered.length} shown — Click to load 40 more)
+          </button>
+        </div>
+      `;
+    }
 
     grid.innerHTML = cardsHtml;
   }

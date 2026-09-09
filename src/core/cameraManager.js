@@ -174,6 +174,60 @@ export class CameraManager {
     }, { passive: false });
 
     this.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // Mobile & Tablet Touch Support (1-finger orbit, 2-finger pinch zoom)
+    this.domElement.style.touchAction = 'none';
+    let pinchStartDist = 0;
+    let pinchStartRadius = 0;
+
+    this.domElement.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        this.isDragging = true;
+        this.previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        this.isDragging = false;
+        pinchStartDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        pinchStartRadius = this.spherical.radius;
+      }
+    }, { passive: true });
+
+    this.domElement.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1 && this.isDragging) {
+        const deltaX = e.touches[0].clientX - this.previousMousePosition.x;
+        const deltaY = e.touches[0].clientY - this.previousMousePosition.y;
+
+        this.spherical.theta -= deltaX * 0.007;
+        this.spherical.phi -= deltaY * 0.007;
+        this.spherical.phi = Math.max(this.minPolarAngle, Math.min(this.maxPolarAngle, this.spherical.phi));
+
+        const offset = new THREE.Vector3().setFromSpherical(this.spherical);
+        this.camera.position.copy(this.target).add(offset);
+        this.camera.lookAt(this.target);
+
+        this.previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2 && pinchStartDist > 0) {
+        const currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const scale = pinchStartDist / (currentDist || 1);
+        this.spherical.radius = Math.max(this.minDistance, Math.min(this.maxDistance, pinchStartRadius * scale));
+
+        const offset = new THREE.Vector3().setFromSpherical(this.spherical);
+        this.camera.position.copy(this.target).add(offset);
+        this.camera.lookAt(this.target);
+      }
+    }, { passive: true });
+
+    const endTouch = () => {
+      this.isDragging = false;
+      pinchStartDist = 0;
+    };
+    this.domElement.addEventListener('touchend', endTouch);
+    this.domElement.addEventListener('touchcancel', endTouch);
   }
 
   zoomToNode(nodeId, duration = 900) {

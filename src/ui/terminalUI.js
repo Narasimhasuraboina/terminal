@@ -8,14 +8,14 @@ import { VirtualLinuxEnv } from '../simulation/virtualLinuxEnv.js';
 import { sound } from '../audio/soundFX.js';
 
 export class TerminalUI {
-  constructor(domElement, onRunCommand) {
+  constructor(domElement, onRunCommand, vEnv = null) {
     this.container = domElement;
     this.onRunCommand = onRunCommand;
     this.history = [];
     this.historyIndex = -1;
 
     // Real-time Virtual Linux POSIX Shell Environment
-    this.vEnv = new VirtualLinuxEnv();
+    this.vEnv = vEnv || new VirtualLinuxEnv();
 
     this.render();
     this.setupListeners();

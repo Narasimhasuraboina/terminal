@@ -222,6 +222,44 @@ body, html {
   justify-content: space-between;
 }
 
+.side-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.side-toggle-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.side-toggle-btn:hover {
+  background: rgba(0, 243, 255, 0.2);
+  border-color: var(--accent-cyan);
+  color: #fff;
+}
+
+.side-process-panel.minimized {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.side-process-panel.minimized > :not(.side-panel-header) {
+  display: none !important;
+}
+
 .side-badge-group {
   display: flex;
   align-items: center;
@@ -2470,6 +2508,200 @@ body, html {
 .hud-brand-link:hover {
   color: #fff;
   text-decoration: underline;
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+============================================================ */
+
+@media (max-width: 1280px) {
+  .hud-brand {
+    gap: 8px;
+  }
+  .brand-sub {
+    display: none;
+  }
+  .side-process-panel {
+    width: 350px;
+  }
+  .term-dock-container {
+    width: 380px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hud-top-bar {
+    padding: 6px 12px;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .hud-top-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hud-registers-strip {
+    display: none;
+  }
+
+  .hud-top-actions {
+    gap: 6px;
+  }
+
+  .side-process-panel {
+    top: 54px;
+    right: 10px;
+    width: 320px;
+  }
+
+  .term-dock-container {
+    left: 10px;
+    bottom: 58px;
+    width: 350px;
+  }
+
+  .practice-layout {
+    overflow-y: auto;
+  }
+  
+  .practice-main-content {
+    grid-template-columns: 320px 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .hud-top-bar {
+    padding: 4px 8px;
+    height: auto;
+    min-height: 44px;
+  }
+
+  .brand-title {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  .ring-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .hud-action-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  /* Right sidebar becomes top-aligned drawer */
+  .side-process-panel {
+    top: 50px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+    max-width: none;
+    padding: 10px 12px;
+  }
+
+  /* Terminal dock docks cleanly at bottom with full width */
+  .term-dock-container {
+    left: 8px;
+    right: 8px;
+    bottom: 52px;
+    width: auto;
+    max-width: none;
+  }
+
+  .term-presets {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+  .term-presets::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Bottom timeline controls */
+  .hud-bottom-bar {
+    bottom: 4px;
+    padding: 4px 8px;
+    gap: 6px;
+    width: calc(100vw - 16px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .cam-presets-group,
+  .speed-group {
+    display: none;
+  }
+
+  /* Modals full screen on mobile */
+  .missions-modal-container,
+  .guide-modal-container,
+  .quiz-modal-container,
+  .modal-dialog {
+    width: 96vw !important;
+    height: 92vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 4vh auto !important;
+  }
+
+  .missions-controls-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .missions-category-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+  }
+
+  /* Practice Page stacks vertically */
+  .practice-main-content {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    overflow-y: visible;
+  }
+
+  .practice-sidebar {
+    width: 100%;
+    max-height: 260px;
+    border-right: none;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  .practice-terminal-arena {
+    padding: 10px;
+    height: auto;
+    min-height: 480px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-logo {
+    font-size: 16px;
+  }
+
+  .ring-badge {
+    display: none;
+  }
+
+  .side-process-title {
+    font-size: 12px;
+  }
+
+  .side-process-desc,
+  .side-why-text {
+    font-size: 11px;
+  }
+
+  .p-stat {
+    display: none;
+  }
 }
 
 

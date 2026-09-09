@@ -26,14 +26,17 @@ import { QuizMode } from './ui/quizMode.js';
 import { MissionsModal } from './ui/missionsModal.js';
 import { PracticePage } from './ui/practicePage.js';
 import { LINUX_100_COMMANDS } from './data/linux100Commands.js';
+import { VirtualLinuxEnv } from './simulation/virtualLinuxEnv.js';
 import { sound } from './audio/soundFX.js';
 
 class App {
   constructor() {
+    this.is3DActive = true;
     this.initCore();
     this.initWorld();
     this.initSimulation();
     this.initUI();
+    this.setupGlobalKeyboardShortcuts();
     this.startAnimationLoop();
 
     // Auto-load initial default command simulation (ls -la)
@@ -79,6 +82,7 @@ class App {
   }
 
   initSimulation() {
+    this.vEnv = new VirtualLinuxEnv();
     this.commandEngine = new CommandEngine();
 
     this.timelineRunner = new TimelineRunner({
@@ -109,12 +113,13 @@ class App {
       container: practiceContainer,
       onSwitchTo3D: () => this.switchTo3DView(),
       commandEngine: this.commandEngine,
-      timelineRunner: this.timelineRunner
+      timelineRunner: this.timelineRunner,
+      vEnv: this.vEnv
     });
 
     this.terminalUI = new TerminalUI(terminalContainer, (cmd) => {
       this.executeCommand(cmd);
-    });
+    }, this.vEnv);
 
     this.hudOverlay = new HudOverlay({
       domElement: hudContainer,
@@ -147,19 +152,77 @@ class App {
     };
   }
 
+  setupGlobalKeyboardShortcuts() {
+    window.addEventListener('keydown', (e) => {
+      const tag = (e.target && e.target.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable)) {
+        return; // Don't intercept when actively typing in terminal or search inputs
+      }
+
+      switch (e.key) {
+        case '1':
+          this.cameraManager.transitionTo('overview');
+          break;
+        case '2':
+          this.cameraManager.transitionTo('userspace');
+          break;
+        case '3':
+          this.cameraManager.transitionTo('syscall');
+          break;
+        case '4':
+          this.cameraManager.transitionTo('kernel');
+          break;
+        case '5':
+          this.cameraManager.transitionTo('vfs');
+          break;
+        case ' ':
+          e.preventDefault();
+          if (this.timelineRunner.isPlaying) {
+            this.timelineRunner.pause();
+          } else {
+            this.timelineRunner.play();
+          }
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          this.timelineRunner.stepForward();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          this.timelineRunner.stepBackward();
+          break;
+        case 'r':
+        case 'R':
+          e.preventDefault();
+          this.timelineRunner.stop();
+          if (this.timelineRunner.currentPlan) {
+            this.timelineRunner.loadPlan(this.timelineRunner.currentPlan);
+          }
+          break;
+      }
+    });
+  }
+
   switchToPracticePage() {
+    this.is3DActive = false;
     document.getElementById('app-viewport').classList.add('hidden');
     document.getElementById('hud-container').classList.add('hidden');
     document.getElementById('terminal-dock').classList.add('hidden');
     document.getElementById('blueprint-container').classList.add('hidden');
     this.practicePage.show();
+    this.practicePage.updatePrompt();
+    this.practicePage.updateVFSExplorer();
   }
 
   switchTo3DView() {
+    this.is3DActive = true;
     this.practicePage.hide();
     document.getElementById('app-viewport').classList.remove('hidden');
     document.getElementById('hud-container').classList.remove('hidden');
     document.getElementById('terminal-dock').classList.remove('hidden');
+    if (this.terminalUI) {
+      this.terminalUI.updatePrompt();
+    }
   }
 
   executeCommand(cmdText, result = null) {
@@ -170,7 +233,7 @@ class App {
     this.timelineRunner.loadPlan(plan);
     this.timelineRunner.play();
 
-    // Check if command matches any 100 Missions task
+    // Check if command matches any 1000 Missions task
     if (this.missionsModal) {
       const trimmed = cmdText.trim();
       const matched = LINUX_100_COMMANDS.find(c => 
@@ -195,19 +258,21 @@ class App {
       // Update TWEEN animations
       TWEEN.update();
 
-      // Update 3D systems
-      this.sceneManager.update(delta);
-      this.layerUserSpace.update(delta);
-      this.layerSyscall.update(delta);
-      this.layerKernel.update(delta);
-      this.layerVFS.update(delta);
-      this.particleSystem.update(delta);
-      if (this.waypointBeacon) {
-        this.waypointBeacon.update(delta);
-      }
+      // Only render 3D frames if viewport is active and tab is visible
+      if (!document.hidden && this.is3DActive) {
+        this.sceneManager.update(delta);
+        this.layerUserSpace.update(delta);
+        this.layerSyscall.update(delta);
+        this.layerKernel.update(delta);
+        this.layerVFS.update(delta);
+        this.particleSystem.update(delta);
+        if (this.waypointBeacon) {
+          this.waypointBeacon.update(delta);
+        }
 
-      // Render 3D frame
-      this.sceneManager.render();
+        // Render 3D frame
+        this.sceneManager.render();
+      }
     };
 
     animate();
