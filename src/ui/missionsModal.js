@@ -124,6 +124,7 @@ export class MissionsModal {
     });
 
     const searchInput = this.modalEl.querySelector('#missions-search-input');
+    const clearBtn = this.modalEl.querySelector('#missions-clear-search');
     let searchDebounce = null;
     searchInput.addEventListener('input', (e) => {
       clearTimeout(searchDebounce);
