@@ -65,9 +65,17 @@ python3 -m http.server 3000 --directory dist
 ## 📚 Documentation & Reference Guides
 
 - [System Architecture](docs/ARCHITECTURE.md) - Deep-dive into 4-layer 3D motherboard design
+- [System Design & Simulation](docs/SYSTEM_DESIGN.md) - End-to-end command execution flow and pipeline
+- [Linux Internals Mapping](docs/LINUX_INTERNALS_MAPPING.md) - Real x86-64 kernel subsystems to 3D geometry
 - [System Call Reference](docs/SYSCALLS.md) - Linux syscall calling conventions and dispatch table
 - [Virtual File System & Inodes](docs/VFS_STRUCTURE.md) - Inode hierarchy and Page Cache model
+- [Data Flow & Overlays](docs/DATA_FLOW.md) - Dual-layer DOM and WebGL state synchronization
 - [Command Reference](docs/COMMAND_REFERENCE.md) - 1,000-command catalog taxonomy
+- [Security & Sandboxing](docs/SECURITY_AND_SANDBOXING.md) - Client-side isolation and memory safety
+- [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) - Vercel, Docker, static hosting, and Cloudflare
+- [Testing Strategy](docs/TESTING_STRATEGY.md) - Test suite architecture and QA practices
+- [Troubleshooting & Diagnostics](docs/TROUBLESHOOTING.md) - WebGL context loss and audio fixes
+- [Product Roadmap](docs/ROADMAP.md) - GLSL shaders, MMU paging, and WebXR VR support
 - [Keyboard Shortcuts](docs/KEYBOARD_SHORTCUTS.md) - Navigation and playback controls
 - [Performance Guide](docs/PERFORMANCE.md) - WebGL optimization, chunk splitting, and event delegation
 - [Web Audio Synthesis](docs/AUDIO_ENGINE.md) - Procedural synthesizer specifications
@@ -81,4 +89,4 @@ python3 -m http.server 3000 --directory dist
 ```bash
 npm test
 ```
-Runs integrity checks across the command catalog, VFS traversal, command engine, syscall mappings, and sandbox files.
+Runs integrity checks across the command catalog, VFS traversal, command engine, syscall mappings, practice sandboxes, and Web Audio API resilience.
