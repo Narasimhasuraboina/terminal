@@ -7,7 +7,7 @@
     "dev": "vite --host --port 3000",
     "build": "vite build",
     "preview": "vite preview --host --port 3000",
-    "test": "node tests/catalogIntegrity.test.js && node tests/vfsIntegrity.test.js && node tests/commandEngine.test.js && node tests/syscallMap.test.js && node tests/practiceSandbox.test.js"
+    "test": "node tests/catalogIntegrity.test.js && node tests/vfsIntegrity.test.js && node tests/commandEngine.test.js && node tests/syscallMap.test.js && node tests/practiceSandbox.test.js && node tests/audioResilience.test.js"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^23.1.3",
